@@ -3,7 +3,7 @@ var state;
 var world;
 var game = new Phaser.Game(1600, 1024, Phaser.AUTO, 'tsinvaders', { preload: preload, create: create, update: update, render: render });
 function preload() {
-    var assetsPath = "assets/Original/PNG/";
+    var assetsPath = "assets/base/png/";
     var images = [
         { name: 'playerBullet', file: 'playerBullet.png' },
         { name: 'enemyBullet', file: 'enemyBullet.png' },
