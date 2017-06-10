@@ -92,6 +92,9 @@ var Enemies = (function () {
         if (shipImage === void 0) { shipImage = 'enemy'; }
         if (bulletImage === void 0) { bulletImage = 'enemyBullet'; }
         var _this = this;
+        this.cooldown = 0;
+        this.BULLET_SPEED = 100;
+        this.FIRE_COOLDOWN = 10;
         // Create the ships group for the enemies
         this.ships = game.add.group();
         this.ships.enableBody = true;
@@ -152,10 +155,39 @@ var Enemies = (function () {
         ship.play('animate');
         ship.body.moves = false;
     };
+    Enemies.prototype.update = function () {
+        this.bullets.forEach(function (b) { return b.angle++; });
+        // Reduce the fire cooldown
+        if (this.cooldown > 0)
+            this.cooldown--;
+        if ((game.rnd.integerInRange(1, 1000) / state.level) < 10) {
+            this.fire();
+        }
+    };
+    Enemies.prototype.fire = function (speed) {
+        if (speed === void 0) { speed = this.BULLET_SPEED; }
+        // Check cooldown
+        if (!this.cooldown) {
+            // Get a bullet from the bullets pool
+            var bullet = this.bullets.getFirstExists(false);
+            // If a bullet is available and at least one enemy alive
+            if (bullet && this.ships.getFirstAlive()) {
+                // Randomly select one of them
+                var shooter = this.ships.getRandom();
+                // Bullet starting position below the shooter ship
+                bullet.reset(shooter.body.x, shooter.body.y);
+                // And fire the bullet from this enemy to the player
+                game.physics.arcade.moveToObject(bullet, world.player.ship, this.BULLET_SPEED * state.level);
+                // Set up the cooldown
+                this.cooldown = this.FIRE_COOLDOWN;
+            }
+        }
+    };
     return Enemies;
 }());
 var State = (function () {
     function State() {
+        this.level = 1;
         this.setupInput();
     }
     State.prototype.setupInput = function () {
@@ -167,6 +199,8 @@ var State = (function () {
     State.prototype.update = function () {
         // Update the player
         world.player.update();
+        // Update the enemies
+        world.enemies.update();
         // Move the player if right or left arrows are pressed
         if (this.cursors.right.isDown || this.cursors.left.isDown) {
             world.player.move(~~this.cursors.right.isDown - ~~this.cursors.left.isDown, 0);

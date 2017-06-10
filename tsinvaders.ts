@@ -128,6 +128,11 @@ class Enemies {
   ships:    Phaser.Group;
   bullets:  Phaser.Group;
 
+  private cooldown: number = 0;
+  
+  private BULLET_SPEED: number = 100;
+  private FIRE_COOLDOWN: number = 10;
+
   constructor(shipImage: string = 'enemy', bulletImage: string = 'enemyBullet') {
 
     // Create the ships group for the enemies
@@ -210,9 +215,54 @@ class Enemies {
 
   }
 
+  public update() {
+
+    this.bullets.forEach((b : Phaser.Sprite) => b.angle++);
+
+    // Reduce the fire cooldown
+    if (this.cooldown > 0) this.cooldown--;
+
+    if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) {
+      this.fire();
+    }
+
+  }
+
+  public fire(speed: number = this.BULLET_SPEED) {
+
+    // Check cooldown
+    if (!this.cooldown) {
+      
+      // Get a bullet from the bullets pool
+      var bullet = this.bullets.getFirstExists(false);
+  
+      // If a bullet is available and at least one enemy alive
+      if (bullet && this.ships.getFirstAlive()) {
+   
+        // Randomly select one of them
+        var shooter: Phaser.Sprite = this.ships.getRandom();
+
+        // Bullet starting position below the shooter ship
+        bullet.reset(shooter.body.x, shooter.body.y);
+
+        // And fire the bullet from this enemy to the player
+        game.physics.arcade.moveToObject(
+          bullet, world.player.ship,
+          this.BULLET_SPEED * state.level
+        );
+
+        // Set up the cooldown
+        this.cooldown = this.FIRE_COOLDOWN;
+
+      }
+    }
+  }
+
 }
 
 class State {
+
+  public level = 1;
 
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
@@ -237,6 +287,9 @@ class State {
 
     // Update the player
     world.player.update();
+
+    // Update the enemies
+    world.enemies.update();
 
     // Move the player if right or left arrows are pressed
     if (this.cursors.right.isDown || this.cursors.left.isDown) {
