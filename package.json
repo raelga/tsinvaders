@@ -1,0 +1,27 @@
+{
+  "name": "tsinvaders",
+  "version": "1.0.0",
+  "description": "A space invaders clone in TypeScript using Phaser.",
+  "main": "tsinvaders.js",
+  "dependencies": {
+    "typescript": "^2.3.4",
+    "ts-loader": "^2.1.0",
+    "phaser": "^2.6.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raelga/tsinvaders.git"
+  },
+  "keywords": [
+    "typescript"
+  ],
+  "author": "Rael Garcia <self@rael.io>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/raelga/tsinvaders/issues"
+  },
+  "homepage": "https://github.com/raelga/tsinvaders#readme"
+}

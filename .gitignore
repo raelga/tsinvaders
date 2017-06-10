@@ -1,4 +1,3 @@
-package.json
-tsconfig.json
 webpack.config.js
 .vscode
+node_modules/*
