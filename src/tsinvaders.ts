@@ -267,8 +267,9 @@ class Enemies {
 
   public update(): void {
 
-    // this.bullets.forEach((b: Phaser.Sprite) => b.angle++);
-
+    // add rotation to the bullets
+    this.bullets.forEach((b: Phaser.Sprite) => b.angle++, this);
+    
     // reduce the fire cooldown
     if (this.cooldown > 0) {
       this.cooldown--;
