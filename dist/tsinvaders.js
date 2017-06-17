@@ -12,9 +12,11 @@ function preload() {
     ];
     images.forEach(function (i) { return game.load.image(i.name, assetsPath + i.file); });
     var sprites = [
-        { name: "enemy", file: "enemy.png", w: 200, h: 200 },
+        { name: "enemy", file: "enemy.png", w: 200, h: 200, f: 6 },
+        { name: "explosion", file: "explosion.png", w: 200, h: 200, f: 6 },
+        { name: "playerExplosion", file: "playerExplosion.png", w: 96, h: 96, f: 12 }
     ];
-    sprites.forEach(function (s) { return game.load.spritesheet(s.name, assetsPath + s.file, s.w, s.h); });
+    sprites.forEach(function (s) { return game.load.spritesheet(s.name, assetsPath + s.file, s.w, s.h, s.f); });
 }
 function create() {
     world = new World();
@@ -34,23 +36,30 @@ var Player = (function () {
         // create the player ship
         this.ship = game.add.sprite(game.stage.width / 2, game.stage.height - 100, shipImage),
             game.physics.enable(this.ship, Phaser.Physics.ARCADE);
-        this.ship.width = 50;
-        this.ship.height = 75;
+        this.ship.scale.setTo(0.25);
+        // create the player lives group
+        this.lives = game.add.group();
         // create the bullet group for the players
         this.bullets = game.add.group();
         this.bullets.enableBody = true;
         this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
         // create the bullets pool
         this.bullets.createMultiple(30, bulletImage);
-        var settings = [
+        [
             { name: "width", value: 20 },
             { name: "height", value: 40 },
             { name: "anchor.x", value: -0.75 },
             { name: "anchor.y", value: 1 },
             { name: "outOfBoundsKill", value: true },
-            { name: "checkWorldBounds", value: true },
-        ];
-        settings.forEach(function (s) { return _this.bullets.setAll(s.name, s.value); });
+            { name: "checkWorldBounds", value: true }
+        ].forEach(function (s) { return _this.bullets.setAll(s.name, s.value); });
+        // create the explosions pool
+        this.explosions = game.add.group();
+        this.explosions.createMultiple(30, 'playerExplosion');
+        [
+            { name: "width", value: this.ship.width * 2 },
+            { name: "height", value: this.ship.height * 2 }
+        ].forEach(function (s) { return _this.explosions.setAll(s.name, s.value); });
     }
     Player.prototype.update = function () {
         // reduce the fire cooldown
@@ -83,6 +92,32 @@ var Player = (function () {
                 this.cooldown = this.FIRE_COOLDOWN;
             }
         }
+    };
+    Player.prototype.die = function () {
+        var live = this.lives.getFirstAlive();
+        if (live) {
+            live.kill();
+        }
+        this.explote();
+        this.ship.kill;
+    };
+    Player.prototype.explote = function () {
+        var explosion = this.explosions.getFirstExists(false);
+        if (explosion) {
+            explosion.reset(this.ship.body.x - this.ship.body.width / 2, this.ship.body.y - this.ship.body.height / 2);
+            explosion.animations.add('explode');
+            explosion.play('explode', 5, false, true);
+        }
+    };
+    Object.defineProperty(Player.prototype, "outOfLives", {
+        get: function () {
+            return (this.lives.countLiving() > 1);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Player.prototype.hit = function () {
+        this.die();
     };
     return Player;
 }());
@@ -150,7 +185,7 @@ var Enemies = (function () {
         ship.height = height;
         ship.anchor.setTo(0.5, 0.5);
         // animate the ships
-        ship.animations.add("animate", null, 10, true);
+        ship.animations.add("animate", null, 6, true);
         ship.play("animate");
         ship.body.moves = false;
     };
@@ -161,10 +196,10 @@ var Enemies = (function () {
             this.cooldown--;
         }
         if ((game.rnd.integerInRange(1, 1000) / state.level) < 10) {
-            this.fire();
+            this.fire(world.player.ship);
         }
     };
-    Enemies.prototype.fire = function (speed) {
+    Enemies.prototype.fire = function (target, speed) {
         if (speed === void 0) { speed = this.BULLET_SPEED; }
         // check cooldown
         if (!this.cooldown) {
@@ -177,7 +212,7 @@ var Enemies = (function () {
                 // bullet starting position below the shooter ship
                 bullet.reset(shooter.body.x, shooter.body.y);
                 // fire the bullet from this enemy to the player
-                game.physics.arcade.moveToObject(bullet, world.player.ship, this.BULLET_SPEED * state.level);
+                game.physics.arcade.moveToObject(bullet, target, this.BULLET_SPEED * state.level);
                 // set up the cooldown
                 this.cooldown = this.FIRE_COOLDOWN;
             }
@@ -187,7 +222,7 @@ var Enemies = (function () {
 }());
 var State = (function () {
     function State() {
-        this.level = 1;
+        this.level = 10;
         this.setupInput();
     }
     State.prototype.setupInput = function () {
@@ -234,8 +269,14 @@ var World = (function () {
         this.enemies = new Enemies(shipImage, bulletImage);
     };
     World.prototype.update = function () {
+        var _this = this;
         // scroll the background to simulate movement
         this.scrollBackground();
+        // check colisions
+        game.physics.arcade.overlap(this.player.ship, this.enemies.bullets, function (player, bullet) {
+            bullet.kill();
+            _this.player.hit();
+        });
     };
     World.prototype.scrollBackground = function (x, y) {
         if (x === void 0) { x = 0; }
