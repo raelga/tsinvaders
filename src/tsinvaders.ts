@@ -274,13 +274,13 @@ class Enemies {
       this.cooldown--;
     }
 
-    if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) {
-      this.fire();
+    if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) { 
+      this.fire(world.player.ship);
     }
 
   }
 
-  public fire(speed: number = this.BULLET_SPEED): void {
+  public fire(target: Phaser.Sprite, speed: number = this.BULLET_SPEED): void {
 
     // check cooldown
     if (!this.cooldown) {
@@ -299,7 +299,7 @@ class Enemies {
 
         // fire the bullet from this enemy to the player
         game.physics.arcade.moveToObject(
-          bullet, world.player.ship,
+          bullet, target,
           this.BULLET_SPEED * state.level
         );
 
@@ -314,7 +314,7 @@ class Enemies {
 
 class State {
 
-  public level = 1;
+  public level = 10;
 
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
