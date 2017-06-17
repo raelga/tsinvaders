@@ -20,8 +20,10 @@ function preload(): void  {
   ]; images.forEach(i => game.load.image(i.name, assetsPath + i.file));
 
   let sprites: any = [
-    { name: "enemy", file: "enemy.png", w: 200, h: 200 },
-  ]; sprites.forEach(s => game.load.spritesheet(s.name, assetsPath + s.file, s.w, s.h));
+    { name: "enemy", file: "enemy.png", w: 200, h: 200, f: 6 },
+    { name: "explosion", file: "explosion.png", w: 200, h: 200, f: 6 },
+    { name: "playerExplosion", file: "playerExplosion.png", w: 96, h: 96, f: 12 }
+  ]; sprites.forEach(s => game.load.spritesheet(s.name, assetsPath + s.file, s.w, s.h, s.f));
 
 }
 
@@ -45,6 +47,8 @@ class Player {
   public bullets: Phaser.Group;
   public lives?: Phaser.Group;
 
+  private explosions: Phaser.Group;
+
   private cooldown: number = 0;
 
   private PLAYER_SPEED: number = 300;
@@ -56,8 +60,10 @@ class Player {
     // create the player ship
     this.ship = game.add.sprite(game.stage.width / 2, game.stage.height - 100, shipImage),
     game.physics.enable(this.ship, Phaser.Physics.ARCADE);
-    this.ship.width = 50;
-    this.ship.height = 75;
+    this.ship.scale.setTo(0.25);
+
+    // create the player lives group
+    this.lives = game.add.group();
 
     // create the bullet group for the players
     this.bullets = game.add.group();
@@ -66,14 +72,22 @@ class Player {
 
     // create the bullets pool
     this.bullets.createMultiple(30, bulletImage);
-    var settings: any = [
+    [
       { name: "width", value: 20 },
       { name: "height", value: 40 },
       { name: "anchor.x", value: -0.75 },
       { name: "anchor.y", value: 1 },
       { name: "outOfBoundsKill", value: true },
-      { name: "checkWorldBounds", value: true },
-    ]; settings.forEach(s => this.bullets.setAll(s.name, s.value));
+      { name: "checkWorldBounds", value: true }
+    ].forEach(s => this.bullets.setAll(s.name, s.value));
+
+    // create the explosions pool
+    this.explosions = game.add.group();
+    this.explosions.createMultiple(30, 'playerExplosion');
+    [
+      { name: "width", value: this.ship.width*2 },
+      { name: "height", value: this.ship.height*2 }
+    ].forEach(s => this.explosions.setAll(s.name, s.value));
 
   }
 
@@ -115,10 +129,45 @@ class Player {
 
         // set up the cooldown
         this.cooldown = this.FIRE_COOLDOWN;
-
+        
       }
 
     }
+
+  }
+
+  private die():void {
+
+    let live: Phaser.Sprite = this.lives.getFirstAlive();
+
+    if (live) { live.kill(); }
+
+    this.explote();
+    this.ship.kill;
+
+  }
+
+  private explote(): void {
+
+    const explosion: Phaser.Sprite = this.explosions.getFirstExists(false);
+
+    if (explosion) {
+
+      explosion.reset(this.ship.body.x - this.ship.body.width/2, this.ship.body.y - this.ship.body.height/2);
+      explosion.animations.add('explode');
+      explosion.play('explode', 5, false, true);
+    }
+
+  }
+
+  get outOfLives(): boolean {
+    return (this.lives.countLiving() > 1);
+  }
+
+
+  public hit(): void {
+
+    this.die();
 
   }
 
@@ -346,6 +395,16 @@ class World {
 
     // scroll the background to simulate movement
     this.scrollBackground();
+
+    // check colisions
+    game.physics.arcade.overlap(
+      this.player.ship,
+      this.enemies.bullets,
+      (player: Phaser.Sprite, bullet: Phaser.Sprite) => {
+        bullet.kill();
+        this.player.hit();
+      }
+    );
 
   }
 
