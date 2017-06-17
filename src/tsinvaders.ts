@@ -259,7 +259,7 @@ class Enemies {
     ship.anchor.setTo(0.5, 0.5);
 
     // animate the ships
-    ship.animations.add("animate", null, 10, true);
+    ship.animations.add("animate", null, 6, true);
     ship.play("animate");
     ship.body.moves = false;
 
