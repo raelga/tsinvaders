@@ -45,7 +45,7 @@ class Player {
 
   public ship: Phaser.Sprite;
   public bullets: Phaser.Group;
-  public lives?: Phaser.Group;
+  public lives: Phaser.Group;
 
   private explosions: Phaser.Group;
 
@@ -83,7 +83,7 @@ class Player {
 
     // create the explosions pool
     this.explosions = game.add.group();
-    this.explosions.createMultiple(30, 'playerExplosion');
+    this.explosions.createMultiple(30, "playerExplosion");
     [
       { name: "width", value: this.ship.width*2 },
       { name: "height", value: this.ship.height*2 }
@@ -125,7 +125,7 @@ class Player {
         bullet.reset(world.player.ship.x, world.player.ship.y + 8);
 
         // bullet fired!
-        bullet.body.velocity.y = this.BULLET_SPEED;
+        bullet.body.velocity.y = speed;
 
         // set up the cooldown
         this.cooldown = this.FIRE_COOLDOWN;
@@ -143,7 +143,7 @@ class Player {
     if (live) { live.kill(); }
 
     this.explote();
-    this.ship.kill;
+    this.ship.kill();
 
   }
 
@@ -154,8 +154,8 @@ class Player {
     if (explosion) {
 
       explosion.reset(this.ship.body.x - this.ship.body.width/2, this.ship.body.y - this.ship.body.height/2);
-      explosion.animations.add('explode');
-      explosion.play('explode', 5, false, true);
+      explosion.animations.add("explode");
+      explosion.play("explode", 5, false, true);
 
     }
 
@@ -194,7 +194,7 @@ class Enemies {
     this.ships.physicsBodyType = Phaser.Physics.ARCADE;
 
     // create the enemy fleet
-    this.createEnemyFleet();
+    this.createEnemyFleet(shipImage);
 
     // create the bullet group for the enemies
     this.bullets = game.add.group();
@@ -214,7 +214,7 @@ class Enemies {
 
     // create the explosions pool
     this.explosions = game.add.group();
-    this.explosions.createMultiple(30, 'playerExplosion');
+    this.explosions.createMultiple(30, "playerExplosion");
 
   }
 
@@ -266,7 +266,7 @@ class Enemies {
     ship.anchor.setTo(0.5, 0.5);
 
     // animate the ships
-    ship.animations.add("animate", null, 6, true);
+    ship.animations.add("animate", undefined, 6, true);
     ship.play("animate");
     ship.body.moves = false;
 
@@ -307,7 +307,7 @@ class Enemies {
         // fire the bullet from this enemy to the player
         game.physics.arcade.moveToObject(
           bullet, target,
-          this.BULLET_SPEED * state.level
+          speed * state.level
         );
 
         // set up the cooldown
@@ -324,8 +324,8 @@ class Enemies {
     if (explosion) {
 
       explosion.reset(ship.body.x - ship.body.width/2, ship.body.y - ship.body.height/2);
-      explosion.animations.add('explode');
-      explosion.play('explode', 15, false, true);
+      explosion.animations.add("explode");
+      explosion.play("explode", 15, false, true);
 
     }
 

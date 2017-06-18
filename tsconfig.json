@@ -2,11 +2,17 @@
     "compilerOptions": {
         "outDir": "./dist/",
         "sourceMap": true,
-        "noImplicitAny": false,
         "lib" : [ "es5", "dom" ],
         "target": "es5",
         "moduleResolution": "node",
-        "module": "commonjs"
+        "module": "commonjs",
+        "strict": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "removeComments": true,
+        "preserveConstEnums": true
     },
     "include": [
         "src/*"
