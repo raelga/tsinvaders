@@ -150,6 +150,9 @@ var Enemies = (function () {
             { name: "checkWorldBounds", value: true },
         ];
         settings.forEach(function (s) { return _this.bullets.setAll(s.name, s.value); });
+        // create the explosions pool
+        this.explosions = game.add.group();
+        this.explosions.createMultiple(30, 'playerExplosion');
     }
     Enemies.prototype.createEnemyFleet = function (image, rows, columns, difficulty) {
         var _this = this;
@@ -218,6 +221,18 @@ var Enemies = (function () {
             }
         }
     };
+    Enemies.prototype.explote = function (ship) {
+        var explosion = this.explosions.getFirstExists(false);
+        if (explosion) {
+            explosion.reset(ship.body.x - ship.body.width / 2, ship.body.y - ship.body.height / 2);
+            explosion.animations.add('explode');
+            explosion.play('explode', 15, false, true);
+        }
+    };
+    Enemies.prototype.hit = function (ship) {
+        this.explote(ship);
+        ship.kill();
+    };
     return Enemies;
 }());
 var State = (function () {
@@ -272,10 +287,15 @@ var World = (function () {
         var _this = this;
         // scroll the background to simulate movement
         this.scrollBackground();
-        // check colisions
+        // check colisions between enemy bullets and player
         game.physics.arcade.overlap(this.player.ship, this.enemies.bullets, function (player, bullet) {
             bullet.kill();
             _this.player.hit();
+        });
+        // check colisions between player bullets and enemies
+        game.physics.arcade.overlap(this.enemies.ships, this.player.bullets, function (ship, bullet) {
+            bullet.kill();
+            _this.enemies.hit(ship);
         });
     };
     World.prototype.scrollBackground = function (x, y) {
