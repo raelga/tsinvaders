@@ -1,9 +1,9 @@
 /// <reference path="../node_modules/phaser/typescript/phaser.d.ts" />
 
-var state: State;
-var world: World;
+let state: State;
+let world: World;
 
-var game: Phaser.Game = new Phaser.Game(
+let game: Phaser.Game = new Phaser.Game(
   1600, 1024, Phaser.AUTO, "tsinvaders",
   { preload: preload, create: create, update: update, render: null }
 );
@@ -129,7 +129,7 @@ class Player {
 
         // set up the cooldown
         this.cooldown = this.FIRE_COOLDOWN;
-        
+
       }
 
     }
@@ -156,6 +156,7 @@ class Player {
       explosion.reset(this.ship.body.x - this.ship.body.width/2, this.ship.body.y - this.ship.body.height/2);
       explosion.animations.add('explode');
       explosion.play('explode', 5, false, true);
+
     }
 
   }
@@ -177,6 +178,8 @@ class Enemies {
 
   ships:    Phaser.Group;
   bullets:  Phaser.Group;
+  private explosions: Phaser.Group;
+
 
   private cooldown: number = 0;
 
@@ -208,6 +211,10 @@ class Enemies {
       { name: "outOfBoundsKill", value: true },
       { name: "checkWorldBounds", value: true },
     ]; settings.forEach(s => this.bullets.setAll(s.name, s.value));
+
+    // create the explosions pool
+    this.explosions = game.add.group();
+    this.explosions.createMultiple(30, 'playerExplosion');
 
   }
 
@@ -275,7 +282,7 @@ class Enemies {
       this.cooldown--;
     }
 
-    if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) { 
+    if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) {
       this.fire(world.player.ship);
     }
 
@@ -309,6 +316,27 @@ class Enemies {
 
       }
     }
+  }
+
+  private explote(ship: Phaser.Sprite): void {
+
+    const explosion: Phaser.Sprite = this.explosions.getFirstExists(false);
+
+    if (explosion) {
+
+      explosion.reset(ship.body.x - ship.body.width/2, ship.body.y - ship.body.height/2);
+      explosion.animations.add('explode');
+      explosion.play('explode', 15, false, true);
+
+    }
+
+  }
+
+  public hit(ship: Phaser.Sprite): void {
+
+    this.explote(ship);
+    ship.kill();
+
   }
 
 }
@@ -397,13 +425,23 @@ class World {
     // scroll the background to simulate movement
     this.scrollBackground();
 
-    // check colisions
+    // check colisions between enemy bullets and player
     game.physics.arcade.overlap(
       this.player.ship,
       this.enemies.bullets,
       (player: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
         this.player.hit();
+      }
+    );
+
+    // check colisions between player bullets and enemies
+    game.physics.arcade.overlap(
+      this.enemies.ships,
+      this.player.bullets,
+      (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
+        bullet.kill();
+        this.enemies.hit(ship);
       }
     );
 
