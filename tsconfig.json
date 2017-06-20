@@ -1,16 +1,22 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
-        "sourceMap": true,
-        "noImplicitAny": false,
         "lib" : [ "es5", "dom" ],
         "target": "es5",
         "moduleResolution": "node",
-        "module": "commonjs"
+        "module": "commonjs",
+        "sourceMap": true,
+        //"strict": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "removeComments": true,
+        "preserveConstEnums": true
     },
-    "include": [
-        "src/*"
-    ],
+  "files": [
+    "./src/game.ts",
+    "./node_modules/phaser-ce/typescript/phaser.comments.d.ts"
+  ],
     "exclude": [
         "node_modules"
     ]
