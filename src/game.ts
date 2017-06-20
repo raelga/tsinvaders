@@ -1,6 +1,7 @@
 import "p2";
-import "phaser";
 import "pixi";
+
+import "phaser";
 
 let state: State;
 let world: World;
