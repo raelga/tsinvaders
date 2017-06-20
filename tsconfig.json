@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "outDir": "./dist/",
         "sourceMap": true,
         "lib" : [ "es5", "dom" ],
         "target": "es5",
         "moduleResolution": "node",
         "module": "commonjs",
-        "strict": true,
+        //"strict": true,
         "noImplicitAny": false,
         "noImplicitReturns": true,
         "noUnusedLocals": true,

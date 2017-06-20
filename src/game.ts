@@ -1,4 +1,7 @@
-/// <reference path="../node_modules/phaser/typescript/phaser.d.ts" />
+// <reference path="../node_modules/phaser/typescript/phaser.d.ts" />
+import "pixi";
+import "p2";
+import * as Phaser from 'phaser-ce';
 
 let state: State;
 let world: World;
@@ -138,12 +141,7 @@ class Player {
 
   private die():void {
 
-    let live: Phaser.Sprite = this.lives.getFirstAlive();
-
-    if (live) { live.kill(); }
-
     this.explote();
-    this.ship.kill();
 
   }
 
@@ -166,7 +164,13 @@ class Player {
   }
 
 
-  public hit(): void {
+  public hit(ship: Phaser.Sprite): void {
+
+    let live: Phaser.Sprite = this.lives.getFirstAlive();
+
+    if (live) { live.kill(); }
+
+    ship.kill();
 
     this.die();
 
@@ -428,9 +432,9 @@ class World {
     game.physics.arcade.overlap(
       this.player.ship,
       this.enemies.bullets,
-      (player: Phaser.Sprite, bullet: Phaser.Sprite) => {
+      (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
-        this.player.hit();
+        this.player.hit(ship);
       }
     );
 
