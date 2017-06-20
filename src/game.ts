@@ -1,14 +1,13 @@
-// <reference path="../node_modules/phaser/typescript/phaser.d.ts" />
-import "pixi";
 import "p2";
-import * as Phaser from 'phaser-ce';
+import "phaser";
+import "pixi";
 
 let state: State;
 let world: World;
 
 let game: Phaser.Game = new Phaser.Game(
   1600, 1024, Phaser.AUTO, "tsinvaders",
-  { preload: preload, create: create, update: update, render: null }
+  { preload: preload, create: create, update: update, render: null },
 );
 
 function preload(): void  {
@@ -19,14 +18,14 @@ function preload(): void  {
     { name: "playerBullet", file: "playerBullet.png" },
     { name: "enemyBullet", file: "enemyBullet.png" },
     { name: "player", file: "player.png" },
-    { name: "background", file: "background.png" }
-  ]; images.forEach(i => game.load.image(i.name, assetsPath + i.file));
+    { name: "background", file: "background.png" },
+  ]; images.forEach((i) => game.load.image(i.name, assetsPath + i.file));
 
   let sprites: any = [
     { name: "enemy", file: "enemy.png", w: 200, h: 200, f: 6 },
     { name: "explosion", file: "explosion.png", w: 200, h: 200, f: 6 },
-    { name: "playerExplosion", file: "playerExplosion.png", w: 96, h: 96, f: 12 }
-  ]; sprites.forEach(s => game.load.spritesheet(s.name, assetsPath + s.file, s.w, s.h, s.f));
+    { name: "playerExplosion", file: "playerExplosion.png", w: 96, h: 96, f: 12 },
+  ]; sprites.forEach((s) => game.load.spritesheet(s.name, assetsPath + s.file, s.w, s.h, s.f));
 
 }
 
@@ -81,16 +80,16 @@ class Player {
       { name: "anchor.x", value: -0.75 },
       { name: "anchor.y", value: 1 },
       { name: "outOfBoundsKill", value: true },
-      { name: "checkWorldBounds", value: true }
-    ].forEach(s => this.bullets.setAll(s.name, s.value));
+      { name: "checkWorldBounds", value: true },
+    ].forEach((s) => this.bullets.setAll(s.name, s.value));
 
     // create the explosions pool
     this.explosions = game.add.group();
     this.explosions.createMultiple(30, "playerExplosion");
     [
-      { name: "width", value: this.ship.width*2 },
-      { name: "height", value: this.ship.height*2 }
-    ].forEach(s => this.explosions.setAll(s.name, s.value));
+      { name: "width", value: this.ship.width * 2 },
+      { name: "height", value: this.ship.height * 2 },
+    ].forEach((s) => this.explosions.setAll(s.name, s.value));
 
   }
 
@@ -139,7 +138,7 @@ class Player {
 
   }
 
-  private die():void {
+  private die(): void {
 
     this.explote();
 
@@ -151,7 +150,7 @@ class Player {
 
     if (explosion) {
 
-      explosion.reset(this.ship.body.x - this.ship.body.width/2, this.ship.body.y - this.ship.body.height/2);
+      explosion.reset(this.ship.body.x - this.ship.body.width / 2, this.ship.body.y - this.ship.body.height / 2);
       explosion.animations.add("explode");
       explosion.play("explode", 5, false, true);
 
@@ -171,6 +170,7 @@ class Player {
     if (live) { live.kill(); }
 
     ship.kill();
+    ship.revive();
 
     this.die();
 
@@ -214,7 +214,7 @@ class Enemies {
       { name: "anchor.y", value: 1 },
       { name: "outOfBoundsKill", value: true },
       { name: "checkWorldBounds", value: true },
-    ]; settings.forEach(s => this.bullets.setAll(s.name, s.value));
+    ]; settings.forEach((s) => this.bullets.setAll(s.name, s.value));
 
     // create the explosions pool
     this.explosions = game.add.group();
@@ -232,15 +232,15 @@ class Enemies {
     };
 
     // populate the ememy fleet
-    for (var y: number = 0; y < rows; y++) {
+    for (let y: number = 0; y < rows; y++) {
       const xshift: number = (y % 2) ? 20 : 0;
-      for (var x: number = 0; x < columns; x++) {
+      for (let x: number = 0; x < columns; x++) {
         this.setupEnemyShip(
           xshift + x * (box.width + box.spacing),
           y * (box.height + box.spacing),
           box.width,
           box.height,
-          image
+          image,
         );
       }
     }
@@ -250,10 +250,10 @@ class Enemies {
     this.ships.y = 50;
 
     // move the group edge to edge and loop
-    var tween: Phaser.Tween = game.add.tween(this.ships).to(
+    let tween: Phaser.Tween = game.add.tween(this.ships).to(
       { x: game.width - box.width * columns },
       6000 / (difficulty ? difficulty : 1),
-      Phaser.Easing.Linear.None, true, 0, 1000, true
+      Phaser.Easing.Linear.None, true, 0, 1000, true,
     );
 
     // descend on loop
@@ -264,7 +264,7 @@ class Enemies {
   private setupEnemyShip(x: number, y: number, width: number, height: number, image: string): void  {
 
     // create the enemy ship
-    var ship: Phaser.Sprite = this.ships.create(x, y, image);
+    let ship: Phaser.Sprite = this.ships.create(x, y, image);
     ship.width = width;
     ship.height = height;
     ship.anchor.setTo(0.5, 0.5);
@@ -311,7 +311,7 @@ class Enemies {
         // fire the bullet from this enemy to the player
         game.physics.arcade.moveToObject(
           bullet, target,
-          speed * state.level
+          speed * state.level,
         );
 
         // set up the cooldown
@@ -327,7 +327,7 @@ class Enemies {
 
     if (explosion) {
 
-      explosion.reset(ship.body.x - ship.body.width/2, ship.body.y - ship.body.height/2);
+      explosion.reset(ship.body.x - ship.body.width / 2, ship.body.y - ship.body.height / 2);
       explosion.animations.add("explode");
       explosion.play("explode", 15, false, true);
 
@@ -435,7 +435,7 @@ class World {
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
         this.player.hit(ship);
-      }
+      },
     );
 
     // check colisions between player bullets and enemies
@@ -445,7 +445,7 @@ class World {
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
         this.enemies.hit(ship);
-      }
+      },
     );
 
   }

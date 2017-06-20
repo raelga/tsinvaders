@@ -18,11 +18,13 @@ module.exports = {
             pixi: path.join(__dirname, 'node_modules/phaser-ce/build/custom/pixi.js'),
             phaser: path.join(__dirname, 'node_modules/phaser-ce/build/custom/phaser-split.js'),
             p2: path.join(__dirname, 'node_modules/phaser-ce/build/custom/p2.js'),
+            assets: path.join(__dirname, 'assets/')
         }
     },
     module: {
         rules: [
             { test: /\.ts$/, enforce: 'pre', loader: 'tslint-loader' },
+            { test: /assets(\/|\\)/, loader: 'file-loader?name=assets/[hash].[ext]' },
             { test: /pixi\.js$/, loader: 'expose-loader?PIXI' },
             { test: /phaser-split\.js$/, loader: 'expose-loader?Phaser' },
             { test: /p2\.js$/, loader: 'expose-loader?p2' },
@@ -45,6 +47,15 @@ module.exports = {
             filename: path.resolve(__dirname, 'index.html'),
             template: './templates/index.ejs',
             title: 'TypeScript Space Invaders Clone'
-        })
+        }),
+        new CleanWebpackPlugin([
+            path.join(__dirname, 'dist')
+        ]),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            screw_ie8: true
+        }),
     ]
 };
