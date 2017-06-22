@@ -275,6 +275,9 @@ class Enemies {
     ship.play("animate");
     ship.body.moves = false;
 
+    // add them health
+    ship.health = 100;
+
   }
 
   public update(): void {
@@ -288,6 +291,12 @@ class Enemies {
 
     if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) {
       this.fire(world.player.ship);
+    }
+
+    if (!this.ships.getFirstAlive()) {
+      this.ships.reviveAll();
+      state.levelUp();
+      this.createEnemyFleet( undefined, 5, 5, state.level);
     }
 
   }
@@ -347,14 +356,20 @@ class Enemies {
 
 class State {
 
-  public level = 10;
+  public score = 0;
+  public level = 1;
 
+  private scoreOSD: Phaser.Text;
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
+
+  public scoreUp = (points: number) => this.score += points;
+  public levelUp = () => this.level++;
 
   constructor() {
 
     this.setupInput();
+    this.setupOSD();
 
   }
 
@@ -368,6 +383,13 @@ class State {
 
   }
 
+  private setupOSD(): void {
+
+    this.scoreOSD = game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: "#fff" });
+    // this.OSD.lives = game.add.text(100, 200, "Lives: " + world.player.lives);
+    // this.OSD.level = game.add.text(100, 300, "Level: " + this.level);
+
+  }
   public update(): void {
 
     // update the player
@@ -383,6 +405,8 @@ class State {
     if (this.cursors.up.isDown || this.fireKey.isDown) {
       world.player.fire();
     }
+
+    this.scoreOSD.setText(this.score.toString());
 
   }
 
@@ -429,7 +453,7 @@ class World {
     // scroll the background to simulate movement
     this.scrollBackground();
 
-    // check colisions between enemy bullets and player
+    // check collisions between enemy bullets and player
     game.physics.arcade.overlap(
       this.player.ship,
       this.enemies.bullets,
@@ -439,12 +463,13 @@ class World {
       },
     );
 
-    // check colisions between player bullets and enemies
+    // check collisions between player bullets and enemies
     game.physics.arcade.overlap(
       this.enemies.ships,
       this.player.bullets,
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
+        state.scoreUp(ship.health);
         this.enemies.hit(ship);
       },
     );
