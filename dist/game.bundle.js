@@ -106089,7 +106089,7 @@ var Enemies = (function () {
         this.ships = game.add.group();
         this.ships.enableBody = true;
         this.ships.physicsBodyType = Phaser.Physics.ARCADE;
-        this.createEnemyFleet(shipImage);
+        this.createEnemyFleet(shipImage, 2, 5);
         this.bullets = game.add.group();
         this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.bullets.enableBody = true;
@@ -106125,7 +106125,8 @@ var Enemies = (function () {
         }
         this.ships.x = 100;
         this.ships.y = 50;
-        var tween = game.add.tween(this.ships).to({ x: game.width - box.width * columns }, 6000 / (difficulty ? difficulty : 1), Phaser.Easing.Linear.None, true, 0, 1000, true);
+        var duration = 6000 - 125 * difficulty;
+        var tween = game.add.tween(this.ships).to({ x: game.width - box.width * columns }, duration, Phaser.Easing.Linear.None, true, 0, duration / 6, true);
         tween.onRepeat.add(function () { return _this.ships.y += game.height / 10; }, this);
     };
     Enemies.prototype.setupEnemyShip = function (x, y, width, height, image) {
@@ -106157,9 +106158,11 @@ var Enemies = (function () {
             var bullet = this.bullets.getFirstExists(false);
             if (bullet && this.ships.getFirstAlive()) {
                 var shooter = this.ships.getRandom();
-                bullet.reset(shooter.body.x, shooter.body.y);
-                game.physics.arcade.moveToObject(bullet, target, speed * state.level);
-                this.cooldown = this.FIRE_COOLDOWN;
+                if (shooter.alive) {
+                    bullet.reset(shooter.body.x, shooter.body.y);
+                    game.physics.arcade.moveToObject(bullet, target, speed + 50 * state.level);
+                    this.cooldown = this.FIRE_COOLDOWN;
+                }
             }
         }
     };

@@ -199,7 +199,7 @@ class Enemies {
     this.ships.physicsBodyType = Phaser.Physics.ARCADE;
 
     // create the enemy fleet
-    this.createEnemyFleet(shipImage);
+    this.createEnemyFleet(shipImage, 2, 5);
 
     // create the bullet group for the enemies
     this.bullets = game.add.group();
@@ -223,7 +223,7 @@ class Enemies {
 
   }
 
-  public createEnemyFleet(image: string = "enemy", rows: number = 4, columns: number = 7, difficulty: number = 1): void  {
+  public createEnemyFleet(image: string = "enemy", rows: number = 3, columns: number = 6, difficulty: number = 1): void  {
 
     // set the enemy Ship box Size
     const box: any = {
@@ -250,11 +250,13 @@ class Enemies {
     this.ships.x = 100;
     this.ships.y = 50;
 
+    const duration: number = 6000 - 125 * difficulty;
+
     // move the group edge to edge and loop
     let tween: Phaser.Tween = game.add.tween(this.ships).to(
       { x: game.width - box.width * columns },
-      6000 / (difficulty ? difficulty : 1),
-      Phaser.Easing.Linear.None, true, 0, 1000, true,
+      duration,
+      Phaser.Easing.Linear.None, true, 0, duration / 6, true,
     );
 
     // descend on loop
@@ -314,18 +316,20 @@ class Enemies {
 
         // randomly select one of them
         let shooter: Phaser.Sprite = this.ships.getRandom();
+        
+        if (shooter.alive) {
+          // bullet starting position below the shooter ship
+          bullet.reset(shooter.body.x, shooter.body.y);
 
-        // bullet starting position below the shooter ship
-        bullet.reset(shooter.body.x, shooter.body.y);
+          // fire the bullet from this enemy to the player
+          game.physics.arcade.moveToObject(
+            bullet, target,
+            speed + 50 * state.level,
+          );
 
-        // fire the bullet from this enemy to the player
-        game.physics.arcade.moveToObject(
-          bullet, target,
-          speed * state.level,
-        );
-
-        // set up the cooldown
-        this.cooldown = this.FIRE_COOLDOWN;
+          // set up the cooldown
+          this.cooldown = this.FIRE_COOLDOWN;
+        }
 
       }
     }
