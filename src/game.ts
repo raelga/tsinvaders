@@ -359,7 +359,12 @@ class State {
   public score = 0;
   public level = 1;
 
+  private timer: Phaser.Timer;
+  private timeUp: Phaser.TimerEvent;
+
   private scoreOSD: Phaser.Text;
+  private timerOSD: Phaser.Text;
+
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
 
@@ -389,7 +394,18 @@ class State {
     // this.OSD.lives = game.add.text(100, 200, "Lives: " + world.player.lives);
     // this.OSD.level = game.add.text(100, 300, "Level: " + this.level);
 
+    // create a timer
+    this.timer = game.time.create();
+
+    // Create a delayed event 2m from now
+    this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timer.stop(), this);
+    this.timerOSD = game.add.text(game.width - 100, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
+
+    // Start the tim
+    this.timer.start();
+
   }
+
   public update(): void {
 
     // update the player
@@ -407,8 +423,17 @@ class State {
     }
 
     this.scoreOSD.setText(this.score.toString());
+    this.timerOSD.setText(this.clock(this.timeUp));
 
   }
+
+  private clock (timeEvent: Phaser.TimerEvent): string {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        const secondsLeft: number = Math.round((timeEvent.delay - this.timer.ms) / 1000);
+        const minutes: string = "0" + Math.floor(secondsLeft / 60);
+        const seconds: string = "0" + Math.floor(secondsLeft % 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);
+    }
 
 }
 
@@ -473,6 +498,17 @@ class World {
         this.enemies.hit(ship);
       },
     );
+
+    // check collisions between player and enemies
+    game.physics.arcade.overlap(
+      this.player.ship,
+      this.enemies.ships,
+      (player_ship: Phaser.Sprite, enemy_ship: Phaser.Sprite) => {
+        this.enemies.hit(enemy_ship);
+        this.player.hit(player_ship);
+      },
+    );
+
 
   }
 
