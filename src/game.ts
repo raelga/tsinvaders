@@ -199,7 +199,7 @@ class Enemies {
     this.ships.physicsBodyType = Phaser.Physics.ARCADE;
 
     // create the enemy fleet
-    this.createEnemyFleet(shipImage);
+    this.createEnemyFleet(shipImage, 2, 5);
 
     // create the bullet group for the enemies
     this.bullets = game.add.group();
@@ -223,7 +223,7 @@ class Enemies {
 
   }
 
-  public createEnemyFleet(image: string = "enemy", rows: number = 4, columns: number = 7, difficulty: number = 1): void  {
+  public createEnemyFleet(image: string = "enemy", rows: number = 3, columns: number = 6, difficulty: number = 1): void  {
 
     // set the enemy Ship box Size
     const box: any = {
@@ -250,11 +250,13 @@ class Enemies {
     this.ships.x = 100;
     this.ships.y = 50;
 
+    const duration: number = 6000 - 125 * difficulty;
+
     // move the group edge to edge and loop
     let tween: Phaser.Tween = game.add.tween(this.ships).to(
       { x: game.width - box.width * columns },
-      6000 / (difficulty ? difficulty : 1),
-      Phaser.Easing.Linear.None, true, 0, 1000, true,
+      duration,
+      Phaser.Easing.Linear.None, true, 0, duration / 6, true,
     );
 
     // descend on loop
@@ -275,6 +277,9 @@ class Enemies {
     ship.play("animate");
     ship.body.moves = false;
 
+    // add them health
+    ship.health = 100;
+
   }
 
   public update(): void {
@@ -289,6 +294,12 @@ class Enemies {
 
     if ( (game.rnd.integerInRange(1, 1000) / state.level) < 10 ) {
       this.fire(world.player.ship);
+    }
+
+    if (!this.ships.getFirstAlive()) {
+      this.ships.reviveAll();
+      state.levelUp();
+      this.createEnemyFleet( undefined, 5, 5, state.level);
     }
 
   }
@@ -306,18 +317,20 @@ class Enemies {
 
         // randomly select one of them
         let shooter: Phaser.Sprite = this.ships.getRandom();
+        
+        if (shooter.alive) {
+          // bullet starting position below the shooter ship
+          bullet.reset(shooter.body.x, shooter.body.y);
 
-        // bullet starting position below the shooter ship
-        bullet.reset(shooter.body.x, shooter.body.y);
+          // fire the bullet from this enemy to the player
+          game.physics.arcade.moveToObject(
+            bullet, target,
+            speed + 50 * state.level,
+          );
 
-        // fire the bullet from this enemy to the player
-        game.physics.arcade.moveToObject(
-          bullet, target,
-          speed * state.level,
-        );
-
-        // set up the cooldown
-        this.cooldown = this.FIRE_COOLDOWN;
+          // set up the cooldown
+          this.cooldown = this.FIRE_COOLDOWN;
+        }
 
       }
     }
@@ -348,14 +361,25 @@ class Enemies {
 
 class State {
 
-  public level = 10;
+  public score = 0;
+  public level = 1;
+
+  private timer: Phaser.Timer;
+  private timeUp: Phaser.TimerEvent;
+
+  private scoreOSD: Phaser.Text;
+  private timerOSD: Phaser.Text;
 
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
 
+  public scoreUp = (points: number) => this.score += points;
+  public levelUp = () => this.level++;
+
   constructor() {
 
     this.setupInput();
+    this.setupOSD();
 
   }
 
@@ -366,6 +390,24 @@ class State {
 
     // set spacebar as fire key
     this.fireKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+  }
+
+  private setupOSD(): void {
+
+    this.scoreOSD = game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: "#fff" });
+    // this.OSD.lives = game.add.text(100, 200, "Lives: " + world.player.lives);
+    // this.OSD.level = game.add.text(100, 300, "Level: " + this.level);
+
+    // create a timer
+    this.timer = game.time.create();
+
+    // Create a delayed event 2m from now
+    this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timer.stop(), this);
+    this.timerOSD = game.add.text(game.width - 100, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
+
+    // Start the tim
+    this.timer.start();
 
   }
 
@@ -385,7 +427,18 @@ class State {
       world.player.fire();
     }
 
+    this.scoreOSD.setText(this.score.toString());
+    this.timerOSD.setText(this.clock(this.timeUp));
+
   }
+
+  private clock (timeEvent: Phaser.TimerEvent): string {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        const secondsLeft: number = Math.round((timeEvent.delay - this.timer.ms) / 1000);
+        const minutes: string = "0" + Math.floor(secondsLeft / 60);
+        const seconds: string = "0" + Math.floor(secondsLeft % 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);
+    }
 
 }
 
@@ -430,7 +483,7 @@ class World {
     // scroll the background to simulate movement
     this.scrollBackground();
 
-    // check colisions between enemy bullets and player
+    // check collisions between enemy bullets and player
     game.physics.arcade.overlap(
       this.player.ship,
       this.enemies.bullets,
@@ -440,15 +493,27 @@ class World {
       },
     );
 
-    // check colisions between player bullets and enemies
+    // check collisions between player bullets and enemies
     game.physics.arcade.overlap(
       this.enemies.ships,
       this.player.bullets,
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
+        state.scoreUp(ship.health);
         this.enemies.hit(ship);
       },
     );
+
+    // check collisions between player and enemies
+    game.physics.arcade.overlap(
+      this.player.ship,
+      this.enemies.ships,
+      (player_ship: Phaser.Sprite, enemy_ship: Phaser.Sprite) => {
+        this.enemies.hit(enemy_ship);
+        this.player.hit(player_ship);
+      },
+    );
+
 
   }
 
