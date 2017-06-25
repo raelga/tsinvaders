@@ -10,7 +10,7 @@ export default class Enemies {
   private explosions: Phaser.Group;
   fleet:    Phaser.Tween;
 
-  private level: number = 10;
+  private level: number = 1;
   private cooldown: number = 0;
 
   private BULLET_SPEED: number = 100;
@@ -84,6 +84,7 @@ export default class Enemies {
     console.log(`
                 Difficulty: ${duration}
                 Descends  : ${descends}
+                Levbel    : ${difficulty}
     `);
 
     // remove the previous fleet
@@ -133,14 +134,18 @@ export default class Enemies {
       this.cooldown--;
     }
 
-    if ( (Math.floor(Math.random() * 1000) / this.level ) < 10 ) {
+    if ( Math.random() < (0.005 * this.level) ) {
       this.fire(target, game);
     }
 
     if (this.ships.countLiving() === 0) {
-      this.level++;
+      this.levelUp();
       this.ships.removeAll();
-      this.createEnemyFleet( game, 2, 2, this.level);
+      this.createEnemyFleet(
+        game, 
+        (Math.max(Math.min(2, this.level / 4), 4)),
+        (Math.max(Math.min(3, this.level / 4), 8)),
+        this.level);
     }
 
   }
@@ -197,5 +202,7 @@ export default class Enemies {
     ship.kill();
 
   }
+
+  public levelUp = () => this.level += 2;
 
 }
