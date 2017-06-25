@@ -32,14 +32,14 @@ export default class Enemies {
 
     // create the bullets pool
     this.bullets.createMultiple(30, bulletImage);
-    let settings: ISetting[] = [
+    [
       { name: "width", value: 20 },
       { name: "height", value: 20 },
       { name: "anchor.x", value: 0.5 },
       { name: "anchor.y", value: 1 },
       { name: "outOfBoundsKill", value: true },
       { name: "checkWorldBounds", value: true },
-    ]; settings.forEach((s: ISetting) => this.bullets.setAll(s.name, s.value));
+    ].forEach((s: ISetting) => this.bullets.setAll(s.name, s.value));
 
     // create the explosions pool
     this.explosions = game.add.group();
