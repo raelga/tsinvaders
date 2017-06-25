@@ -4,6 +4,7 @@ import "pixi";
 import "phaser";
 
 import BootState from "./states/boot";
+import GameOverState from "./states/gameover";
 import LoadState from "./states/load";
 import MenuState from "./states/menu";
 import PlayState from "./states/play";
@@ -17,6 +18,7 @@ class Game extends Phaser.Game {
         this.state.add("load", LoadState);
         this.state.add("menu", MenuState);
         this.state.add("play", PlayState);
+        this.state.add("gameover", GameOverState);
 
         this.state.start("boot");
 

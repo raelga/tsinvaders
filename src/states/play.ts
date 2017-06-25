@@ -28,6 +28,10 @@ export default class Play extends Phaser.State {
   public scoreUp = (points: number) => this.score += points;
   public levelUp = () => this.level++;
 
+  public init(): void {
+    this.score = 0;
+  }
+
   public create(): void {
 
     this.setupBackground();
@@ -84,6 +88,20 @@ export default class Play extends Phaser.State {
       this.player.fire();
     }
 
+    // check collisions
+    this.checkCollisions();
+
+    this.scoreOSD.setText(this.score.toString());
+    this.timerOSD.setText(this.clock(this.timeUp));
+
+    // check lives
+    if (this.player.outOfLives) {
+      this.gameover();
+    }
+  }
+
+  private checkCollisions(): void {
+
     // check collisions between enemy bullets and player
     this.physics.arcade.overlap(
       this.player.ship,
@@ -115,9 +133,6 @@ export default class Play extends Phaser.State {
       },
     );
 
-    this.scoreOSD.setText(this.score.toString());
-    this.timerOSD.setText(this.clock(this.timeUp));
-
   }
 
   public scrollBackground(x: number = 0, y: number = 3): void  {
@@ -148,7 +163,8 @@ export default class Play extends Phaser.State {
     this.timer = this.game.time.create();
 
     // Create a delayed event 2m from now
-    this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timer.stop(), this);
+    // this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => { this.timer.stop(); this.gameover(); }, this);
+    this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timesUp(), this);
     this.timerOSD = this.game.add.text(this.game.width - 100, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
 
     // Start the timer
@@ -164,5 +180,15 @@ export default class Play extends Phaser.State {
         return minutes.substr(-2) + ":" + seconds.substr(-2);
     }
 
+  private timesUp(): void {
+      this.timerOSD.setText("Times up!");
+      this.gameover();
+  }
+
+  private gameover(): void {
+
+    this.game.state.start("gameover", false, false, this.score);
+
+  }
 
 }

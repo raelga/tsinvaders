@@ -69,9 +69,8 @@ export default class Player {
   }
 
   get outOfLives(): boolean {
-    return (this.lives > 1);
+    return (this.lives < 1);
   }
-
 
   public hit(ship: Phaser.Sprite): void {
 
