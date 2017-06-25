@@ -7,7 +7,7 @@ export default class Player {
   public weapon: Weapon;
   private explosions: Phaser.Group;
 
-  public lives: number = 10;
+  public lives: number = 5;
 
   private PLAYER_SPEED: number = 500;
 
@@ -75,12 +75,13 @@ export default class Player {
   public hit(ship: Phaser.Sprite): void {
 
     ship.kill();
-    ship.revive();
 
     this.die();
 
   }
 
   public fire = () => this.weapon.fire(this.ship);
+
+  public respawn = (x: number, y: number) => { this.ship.revive(); this.ship.position.setTo(x, y) };
 
 }

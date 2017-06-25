@@ -21,6 +21,7 @@ export default class Play extends Phaser.State {
 
   private scoreOSD: Phaser.Text;
   private timerOSD: Phaser.Text;
+  private livesOSD: Phaser.Group;
 
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
@@ -109,6 +110,8 @@ export default class Play extends Phaser.State {
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
         this.player.hit(ship);
+        this.livesOSD.getFirstAlive().kill();
+        this.player.respawn(this.game.width / 2, this.game.height - 100);
       },
     );
 
@@ -156,8 +159,16 @@ export default class Play extends Phaser.State {
   private setupOSD(): void {
 
     this.scoreOSD = this.game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: "#fff" });
-    // this.OSD.lives = game.add.text(100, 200, "Lives: " + world.player.lives);
-    // this.OSD.level = game.add.text(100, 300, "Level: " + this.level);
+
+    this.livesOSD = this.add.group();
+
+    for (let i = 0; i < this.player.lives; i++) {
+        let ship: Phaser.Sprite = this.livesOSD.create(100, this.world.height - 50 * this.player.lives + (50 * i), "player");
+        ship.anchor.setTo(0.5, 0.5);
+        ship.scale.setTo(0.15);
+        ship.angle = 90;
+        ship.alpha = 0.7;
+    }
 
     // create a timer
     this.timer = this.game.time.create();
@@ -165,7 +176,7 @@ export default class Play extends Phaser.State {
     // Create a delayed event 2m from now
     // this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => { this.timer.stop(); this.gameover(); }, this);
     this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timesUp(), this);
-    this.timerOSD = this.game.add.text(this.game.width - 100, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
+    this.timerOSD = this.game.add.text(this.game.width - 150, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
 
     // Start the timer
     this.timer.start();
