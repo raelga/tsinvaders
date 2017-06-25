@@ -8,12 +8,15 @@ export default class Enemies {
   ships:    Phaser.Group;
   bullets:  Phaser.Group;
   private explosions: Phaser.Group;
+  fleet:    Phaser.Tween;
 
   private level: number = 10;
   private cooldown: number = 0;
 
   private BULLET_SPEED: number = 100;
   private FIRE_COOLDOWN: number = 10;
+
+  private shipImage: string = "enemy";
 
   constructor(game: Phaser.Game, shipImage: string = "enemy", bulletImage: string = "enemyBullet") {
 
@@ -22,8 +25,9 @@ export default class Enemies {
     this.ships.enableBody = true;
     this.ships.physicsBodyType = Phaser.Physics.ARCADE;
 
+    this.shipImage = shipImage;
     // create the enemy fleet
-    this.createEnemyFleet(game, shipImage, 2, 5);
+    this.createEnemyFleet(game, 2, 5);
 
     // create the bullet group for the enemies
     this.bullets = game.add.group();
@@ -47,7 +51,7 @@ export default class Enemies {
 
   }
 
-  public createEnemyFleet(game: Phaser.Game, image: string = "enemy", rows: number = 3, columns: number = 6, difficulty: number = 1): void  {
+  public createEnemyFleet(game: Phaser.Game, rows: number = 3, columns: number = 6, difficulty: number = 1): void  {
 
     // set the enemy Ship box Size
     const box: any = {
@@ -65,7 +69,7 @@ export default class Enemies {
           y * (box.height + box.spacing),
           box.width,
           box.height,
-          image,
+          this.shipImage,
         );
       }
     }
@@ -75,16 +79,28 @@ export default class Enemies {
     this.ships.y = 50;
 
     const duration: number = 6000 - 125 * difficulty;
+    const descends: number = 10;
+
+    console.log(`
+                Difficulty: ${duration}
+                Descends  : ${descends}
+    `);
+
+    // remove the previous fleet
+    game.tweens.remove(this.fleet);
 
     // move the group edge to edge and loop
-    let tween: Phaser.Tween = game.add.tween(this.ships).to(
+    this.fleet = game.add.tween(this.ships).to(
       { x: game.width - box.width * columns },
       duration,
-      Phaser.Easing.Linear.None, true, 0, duration / 6, true,
+      Phaser.Easing.Linear.None, true, 0, descends / 2, true,
     );
 
     // descend on loop
-    tween.onRepeat.add(() => this.ships.y += game.height / 10, this);
+    this.fleet.onRepeat.add(() => { this.ships.y += game.height / descends; } );
+
+    // kill on end
+    this.fleet.onComplete.addOnce(() => { this.ships.killAll(); } );
 
   }
 
@@ -121,9 +137,10 @@ export default class Enemies {
       this.fire(target, game);
     }
 
-    if (!this.ships.getFirstAlive()) {
-      this.ships.reviveAll();
-      this.createEnemyFleet( game, undefined, 5, 5, this.level);
+    if (this.ships.countLiving() === 0) {
+      this.level++;
+      this.ships.removeAll();
+      this.createEnemyFleet( game, 2, 2, this.level);
     }
 
   }

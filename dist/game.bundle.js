@@ -106253,10 +106253,12 @@ var Enemies = (function () {
         this.cooldown = 0;
         this.BULLET_SPEED = 100;
         this.FIRE_COOLDOWN = 10;
+        this.shipImage = "enemy";
         this.ships = game.add.group();
         this.ships.enableBody = true;
         this.ships.physicsBodyType = Phaser.Physics.ARCADE;
-        this.createEnemyFleet(game, shipImage, 2, 5);
+        this.shipImage = shipImage;
+        this.createEnemyFleet(game, 2, 5);
         this.bullets = game.add.group();
         this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.bullets.enableBody = true;
@@ -106272,9 +106274,8 @@ var Enemies = (function () {
         this.explosions = game.add.group();
         this.explosions.createMultiple(30, "playerExplosion");
     }
-    Enemies.prototype.createEnemyFleet = function (game, image, rows, columns, difficulty) {
+    Enemies.prototype.createEnemyFleet = function (game, rows, columns, difficulty) {
         var _this = this;
-        if (image === void 0) { image = "enemy"; }
         if (rows === void 0) { rows = 3; }
         if (columns === void 0) { columns = 6; }
         if (difficulty === void 0) { difficulty = 1; }
@@ -106286,14 +106287,18 @@ var Enemies = (function () {
         for (var y = 0; y < rows; y++) {
             var xshift = (y % 2) ? 20 : 0;
             for (var x = 0; x < columns; x++) {
-                this.setupEnemyShip(xshift + x * (box.width + box.spacing), y * (box.height + box.spacing), box.width, box.height, image);
+                this.setupEnemyShip(xshift + x * (box.width + box.spacing), y * (box.height + box.spacing), box.width, box.height, this.shipImage);
             }
         }
         this.ships.x = 100;
         this.ships.y = 50;
         var duration = 6000 - 125 * difficulty;
-        var tween = game.add.tween(this.ships).to({ x: game.width - box.width * columns }, duration, Phaser.Easing.Linear.None, true, 0, duration / 6, true);
-        tween.onRepeat.add(function () { return _this.ships.y += game.height / 10; }, this);
+        var descends = 10;
+        console.log("\n                Difficulty: " + duration + "\n                Descends  : " + descends + "\n    ");
+        game.tweens.remove(this.fleet);
+        this.fleet = game.add.tween(this.ships).to({ x: game.width - box.width * columns }, duration, Phaser.Easing.Linear.None, true, 0, descends / 2, true);
+        this.fleet.onRepeat.add(function () { _this.ships.y += game.height / descends; });
+        this.fleet.onComplete.addOnce(function () { _this.ships.killAll(); });
     };
     Enemies.prototype.setupEnemyShip = function (x, y, width, height, image) {
         var ship = this.ships.create(x, y, image);
@@ -106314,9 +106319,10 @@ var Enemies = (function () {
         if ((Math.floor(Math.random() * 1000) / this.level) < 10) {
             this.fire(target, game);
         }
-        if (!this.ships.getFirstAlive()) {
-            this.ships.reviveAll();
-            this.createEnemyFleet(game, undefined, 5, 5, this.level);
+        if (this.ships.countLiving() === 0) {
+            this.level++;
+            this.ships.removeAll();
+            this.createEnemyFleet(game, 2, 2, this.level);
         }
     };
     Enemies.prototype.fire = function (target, game, speed) {
