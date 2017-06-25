@@ -1,65 +1,39 @@
-import "p2";
-import "pixi";
-
-import "phaser";
-
+import Weapon from "./weapon";
 
 export default class Player {
 
   public ship: Phaser.Sprite;
   public bullets: Phaser.Group;
-  public lives: Phaser.Group;
-
+  public weapon: Weapon;
   private explosions: Phaser.Group;
 
-  private cooldown: number = 0;
+  public lives: number = 10;
 
-  private PLAYER_SPEED: number = 300;
-  private BULLET_SPEED: number = -600;
-  private FIRE_COOLDOWN: number = 10;
+  private PLAYER_SPEED: number = 500;
 
-  constructor(game: Phaser.Game, shipImage: string, bulletImage: string) {
+  constructor(ship: Phaser.Sprite, explosions: Phaser.Group, weapon: Weapon) {
 
-    // create the player ship
-    this.ship = game.add.sprite(game.stage.width / 2, game.stage.height - 100, shipImage),
-    game.physics.enable(this.ship, Phaser.Physics.ARCADE);
-    this.ship.scale.setTo(0.25);
-
-    // create the player lives group
-    this.lives = game.add.group();
-
-    // create the bullet group for the players
-    this.bullets = game.add.group();
-    this.bullets.enableBody = true;
-    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-
-    // create the bullets pool
-    this.bullets.createMultiple(30, bulletImage);
-    [
-      { name: "width", value: 20 },
-      { name: "height", value: 40 },
-      { name: "anchor.x", value: -0.75 },
-      { name: "anchor.y", value: 1 },
-      { name: "outOfBoundsKill", value: true },
-      { name: "checkWorldBounds", value: true },
-    ].forEach((s) => this.bullets.setAll(s.name, s.value));
+    // attach the ship
+    this.ship = ship;
+    this.ship.scale.set(0.25);
 
     // create the explosions pool
-    this.explosions = game.add.group();
+    this.explosions = explosions;
     this.explosions.createMultiple(30, "playerExplosion");
     [
       { name: "width", value: this.ship.width * 2 },
       { name: "height", value: this.ship.height * 2 },
     ].forEach((s) => this.explosions.setAll(s.name, s.value));
 
+    // attach the player weapon
+    this.weapon = weapon;
+
   }
 
   public update(): void  {
 
     // reduce the fire cooldown
-    if (this.cooldown > 0) {
-      this.cooldown--;
-    }
+    this.weapon.cool();
 
     // reset the velocity to stop the ship
     this.ship.body.velocity.setTo(0, 0);
@@ -73,34 +47,9 @@ export default class Player {
 
   }
 
-  public fire(speed: number = this.BULLET_SPEED): void  {
-
-    // check cooldown
-    if (!this.cooldown) {
-
-      // get a bullet from the bullets pool
-      let bullet: Phaser.Sprite = this.bullets.getFirstExists(false);
-
-      // ff a bullet is available
-      if (bullet) {
-
-        // bullet starting position above the player ship
-        bullet.reset(this.ship.x, this.ship.y + 8);
-
-        // bullet fired!
-        bullet.body.velocity.y = speed;
-
-        // set up the cooldown
-        this.cooldown = this.FIRE_COOLDOWN;
-
-      }
-
-    }
-
-  }
-
   private die(): void {
 
+    if (this.lives) this.lives--;
     this.explote();
 
   }
@@ -120,15 +69,11 @@ export default class Player {
   }
 
   get outOfLives(): boolean {
-    return (this.lives.countLiving() > 1);
+    return (this.lives > 1);
   }
 
 
   public hit(ship: Phaser.Sprite): void {
-
-    let live: Phaser.Sprite = this.lives.getFirstAlive();
-
-    if (live) { live.kill(); }
 
     ship.kill();
     ship.revive();
@@ -136,5 +81,7 @@ export default class Player {
     this.die();
 
   }
+
+  public fire = () => this.weapon.fire(this.ship);
 
 }

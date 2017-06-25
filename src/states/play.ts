@@ -5,6 +5,7 @@ import "phaser";
 
 import Enemies from "../game/enemies";
 import Player from "../game/player";
+import Weapon from "../game/weapon";
 
 export default class Play extends Phaser.State {
 
@@ -39,13 +40,19 @@ export default class Play extends Phaser.State {
 
   private setupBackground(image: string = "background"): void {
 
-    this.background = this.game.add.tileSprite(0, 0, this.game.stage.width, this.game.stage.height, image);
+    this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, image);
 
   }
 
   private setupPlayer(shipImage: string = "player", bulletImage: string = "playerBullet"): void  {
 
-    this.player = new Player(this.game, shipImage, bulletImage);
+    this.player = new Player(
+      this.add.sprite(this.game.width / 2, this.game.height - 100, shipImage),
+      this.add.group(),
+      new Weapon(this.add.group(), bulletImage, -600, 10),
+    );
+
+    this.physics.enable(this.player.ship, Phaser.Physics.ARCADE);
 
   }
 
@@ -67,7 +74,10 @@ export default class Play extends Phaser.State {
     this.enemies.update(this.player.ship, this.game);
 
     // move the player if right or left arrows are pressed
-    this.player.move((this.cursors.right.isDown ? 1 : 0) - (this.cursors.left.isDown ? 1 : 0), 0);
+    this.player.move(
+      (this.cursors.right.isDown && this.player.ship.x + this.player.ship.width < this.game.width ? 1 : 0) - (this.cursors.left.isDown && this.player.ship.x > 0 ? 1 : 0),
+      0,
+    );
 
     // fire if up arrow or the fire key are pressed
     if (this.cursors.up.isDown || this.fireKey.isDown) {
@@ -87,7 +97,7 @@ export default class Play extends Phaser.State {
     // check collisions between player bullets and enemies
     this.physics.arcade.overlap(
       this.enemies.ships,
-      this.player.bullets,
+      this.player.weapon.bullets,
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
         this.scoreUp(ship.health);
