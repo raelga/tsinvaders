@@ -97,8 +97,9 @@ export default class Play extends Phaser.State {
 
     // check lives
     if (this.player.outOfLives) {
-      this.gameover();
+      this.gameover("You run out of lives!");
     }
+
   }
 
   private checkCollisions(): void {
@@ -193,12 +194,12 @@ export default class Play extends Phaser.State {
 
   private timesUp(): void {
       this.timerOSD.setText("Times up!");
-      this.gameover();
+      this.gameover("You run out of time!");
   }
 
-  private gameover(): void {
+  private gameover(message: string): void {
 
-    this.game.state.start("gameover", false, false, this.score);
+    this.game.state.start("gameover", false, false, message, this.score);
 
   }
 

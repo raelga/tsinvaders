@@ -1,17 +1,20 @@
 export default class GameOverState extends Phaser.State {
 
   private score: number = 0;
+  private message: string;
 
-  public init(score: number) {
+  public init(message: string, score: number) {
 
     this.score = score;
+    this.message = message;
 
   }
 
   public create(): void {
 
     this.game.add.text(this.game.world.height / 3, this.game.world.height / 2 - 100, "Game Over", { font: "50px Arial", fill: "#fff" });
-    this.game.add.text(this.game.world.height / 3, this.game.world.height / 2, "Your score: " + this.score, { font: "50px Arial", fill: "#fff" });
+    this.game.add.text(this.game.world.height / 3, this.game.world.height / 2, this.message, { font: "50px Arial", fill: "#fff" });
+    this.game.add.text(this.game.world.height / 3, this.game.world.height / 2 + 100, "Finall Score: " + this.score, { font: "50px Arial", fill: "#fff" });
     this.game.add.text(this.game.world.height / 3, this.game.world.height - 80, "Press space to restart", { font: "50px Arial", fill: "#fff" });
 
     // look for spacebar press
