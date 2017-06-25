@@ -24,18 +24,18 @@ export default class LoadState extends Phaser.State {
 
     const assetsPath: String = typeof ASSETS_PATH !== "undefined" ? ASSETS_PATH : "assets/base/png/";
 
-    let images: IImage[] = [
+    [
       { name: "playerBullet", file: "playerBullet.png" },
       { name: "enemyBullet", file: "enemyBullet.png" },
       { name: "player", file: "player.png" },
       { name: "background", file: "background.png" },
-    ]; images.forEach((i: IImage) => this.game.load.image(i.name, assetsPath + i.file));
+    ].forEach((i: IImage) => this.game.load.image(i.name, assetsPath + i.file));
 
-    let sprites: ISprite[] = [
+    [
       { name: "enemy", file: "enemy.png", width: 200, height: 200, frames: 6 },
       { name: "explosion", file: "explosion.png", width: 200, height: 200, frames: 6 },
       { name: "playerExplosion", file: "playerExplosion.png", width: 96, height: 96, frames: 12 },
-    ]; sprites.forEach((s: ISprite) => this.game.load.spritesheet(s.name, assetsPath + s.file, s.width, s.height, s.frames));
+    ].forEach((s: ISprite) => this.game.load.spritesheet(s.name, assetsPath + s.file, s.width, s.height, s.frames));
 
   }
 
