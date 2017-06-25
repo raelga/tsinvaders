@@ -5,8 +5,8 @@
         "moduleResolution": "node",
         "module": "commonjs",
         "sourceMap": true,
-        //"strict": true,
-        "noImplicitAny": false,
+        "strict": false,
+        "noImplicitAny": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
@@ -14,6 +14,7 @@
         "preserveConstEnums": true
     },
   "files": [
+    "./src/globals.d.ts",
     "./src/game.ts",
     "./node_modules/phaser-ce/typescript/phaser.comments.d.ts"
   ],

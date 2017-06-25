@@ -2,7 +2,7 @@
   "name": "tsinvaders",
   "version": "1.0.0",
   "description": "A space invaders clone in TypeScript using Phaser.",
-  "main": "game.js",
+  "main": "tsinvaders.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raelga/tsinvaders.git"
@@ -37,8 +37,8 @@
     "webpack-shell-plugin": "0.5.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js --progress --colors",
-    "watch": "webpack-dev-server --config webpack.config.js --open",
+    "build": "webpack --config webpack.dev.config.js --progress --colors",
+    "watch": "webpack-dev-server --config webpack.dev.config.js --open --hot --inline --colors",
     "dist": "webpack --config webpack.dist.config.js --progress --colors",
     "npm-check": "npm-check --skip-unused -u"
   }
