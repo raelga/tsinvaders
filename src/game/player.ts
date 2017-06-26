@@ -15,7 +15,7 @@ export default class Player {
 
     // attach the ship
     this.ship = ship;
-    this.ship.scale.set(0.25);
+    this.ship.scale.set(0.35);
 
     // create the explosions pool
     this.explosions = explosions;
@@ -62,7 +62,7 @@ export default class Player {
 
       explosion.reset(this.ship.body.x - this.ship.body.width / 2, this.ship.body.y - this.ship.body.height / 2);
       explosion.animations.add("explode");
-      explosion.play("explode", 5, false, true);
+      explosion.play("explode", 10, false, true);
 
     }
 
