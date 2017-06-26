@@ -47,7 +47,7 @@ export default class Enemies {
 
     // create the explosions pool
     this.explosions = game.add.group();
-    this.explosions.createMultiple(30, "playerExplosion");
+    this.explosions.createMultiple(30, "explosion");
 
   }
 
