@@ -142,7 +142,7 @@ export default class Enemies {
       this.levelUp();
       this.ships.removeAll();
       this.createEnemyFleet(
-        game, 
+        game,
         (Math.max(Math.min(2, this.level / 4), 4)),
         (Math.max(Math.min(3, this.level / 4), 8)),
         this.level);

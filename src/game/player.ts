@@ -82,6 +82,6 @@ export default class Player {
 
   public fire = () => this.weapon.fire(this.ship);
 
-  public respawn = (x: number, y: number) => { this.ship.revive(); this.ship.position.setTo(x, y) };
+  public respawn = (x: number, y: number) => { this.ship.revive(); this.ship.position.setTo(x, y); };
 
 }
