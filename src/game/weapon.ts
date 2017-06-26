@@ -55,7 +55,7 @@ export default class Weapon implements IWeapon {
         [
         { name: "width", value: 20 },
         { name: "height", value: 40 },
-        { name: "anchor.x", value: -0.75 },
+        { name: "anchor.x", value: 0.5 },
         { name: "anchor.y", value: 1 },
         { name: "outOfBoundsKill", value: true },
         { name: "checkWorldBounds", value: true },
@@ -82,7 +82,7 @@ export default class Weapon implements IWeapon {
             if (bullet) {
 
                 // bullet starting position above the player ship
-                bullet.reset(source.x, source.y + 8);
+                bullet.reset(source.x + source.width / 2, source.y + 10);
 
                 if (typeof target === "undefined") {
                     // bullet fired!
