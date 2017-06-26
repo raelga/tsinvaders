@@ -3,13 +3,15 @@ var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 
+var outputPath = path.resolve(__dirname, 'public/cps');
+
 module.exports = {
     entry: {
         game: path.join(__dirname, 'src/game.ts'),
     },
     output: {
         filename: 'game.bundle.js',
-        path: path.resolve(__dirname, 'cps'),
+        path: outputPath,
     },
     devtool: "source-map",
     resolve: {
@@ -63,16 +65,16 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: path.resolve(__dirname, 'cps/index.html'),
+            filename: path.resolve(outputPath, 'index.html'),
             template: './templates/index.ejs',
-            title: 'TypeScript Space Invaders Clone'
+            title: 'TypeScript Space Invaders Clone - CPS'
         }),
         new CleanWebpackPlugin([
             path.join(__dirname, 'dist')
         ]),
         new webpack.DefinePlugin({
             'DEBUG': false,
-            'ASSETS_PATH': JSON.stringify("assets/cps/png/"),
+            'ASSETS_PATH': JSON.stringify("assets/images/"),
             'FONT_COLOR': JSON.stringify("#698e00"),
         }),
         new webpack.optimize.UglifyJsPlugin({
