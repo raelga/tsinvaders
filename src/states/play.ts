@@ -159,7 +159,7 @@ export default class Play extends Phaser.State {
 
   private setupOSD(): void {
 
-    this.scoreOSD = this.game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: "#fff" });
+    this.scoreOSD = this.game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: FONT_COLOR });
 
     this.livesOSD = this.add.group();
 
@@ -177,7 +177,7 @@ export default class Play extends Phaser.State {
     // Create a delayed event 2m from now
     // this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => { this.timer.stop(); this.gameover(); }, this);
     this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timesUp(), this);
-    this.timerOSD = this.game.add.text(this.game.width - 150, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
+    this.timerOSD = this.game.add.text(this.game.width - 150, 100, this.clock(this.timeUp), { font: "34px Arial", fill: FONT_COLOR });
 
     // Start the timer
     this.timer.start();
