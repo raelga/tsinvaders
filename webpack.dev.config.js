@@ -45,6 +45,11 @@ module.exports = {
             filename: path.resolve(__dirname, 'index.html'),
             template: './templates/index.ejs',
             title: 'TypeScript Space Invaders Clone'
-        })
+        }),
+        new webpack.DefinePlugin({
+            'DEBUG': false,
+            'ASSETS_PATH': JSON.stringify("assets/base/png/"),
+            'FONT_COLOR': JSON.stringify("#fff"),
+        }),
     ]
 };

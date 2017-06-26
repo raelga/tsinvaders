@@ -70,6 +70,11 @@ module.exports = {
         new CleanWebpackPlugin([
             path.join(__dirname, 'dist')
         ]),
+        new webpack.DefinePlugin({
+            'DEBUG': false,
+            'ASSETS_PATH': JSON.stringify("assets/base/png/"),
+            'FONT_COLOR': JSON.stringify("#fff"),
+        }),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false,
