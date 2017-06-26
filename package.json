@@ -40,7 +40,8 @@
     "build": "webpack --config webpack.dev.config.js --progress --colors",
     "server": "webpack-dev-server --config webpack.dev.config.js --open --hot --inline --colors",
     "dist": "webpack --config webpack.dist.config.js --progress --colors",
-    "cps": "webpack --config webpack.cps.config.js --progress --colors",
+    "public:cps": "webpack --config webpack.cps.config.js --progress --colors",
+    "public:8bits": "webpack --config webpack.8bits.config.js --progress --colors",
     "npm-check": "npm-check --skip-unused -u"
   }
 }
