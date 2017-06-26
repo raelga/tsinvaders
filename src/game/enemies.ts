@@ -188,9 +188,9 @@ export default class Enemies {
 
     if (explosion) {
 
-      explosion.reset(ship.body.x - ship.body.width / 2, ship.body.y - ship.body.height / 2);
+      explosion.reset(ship.body.x - ship.body.width, ship.body.y - ship.body.height);
       explosion.animations.add("explode");
-      explosion.play("explode", 15, false, true);
+      explosion.play("explode", 5, false, true);
 
     }
 
