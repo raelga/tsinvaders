@@ -84,7 +84,7 @@ export default class Enemies {
     console.log(`
                 Difficulty: ${duration}
                 Descends  : ${descends}
-                Levbel    : ${difficulty}
+                Level     : ${difficulty}
     `);
 
     // remove the previous fleet
