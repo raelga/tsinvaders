@@ -74,7 +74,7 @@ module.exports = {
         ]),
         new webpack.DefinePlugin({
             'DEBUG': false,
-            'ASSETS_PATH': JSON.stringify("assets/images/"),
+            'ASSETS_PATH': JSON.stringify("assets"),
             'FONT_COLOR': JSON.stringify("#fff"),
         }),
         new webpack.optimize.UglifyJsPlugin({
