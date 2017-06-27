@@ -18,8 +18,8 @@ export default class GameOverState extends Phaser.State {
     this.game.add.text(this.game.world.width / 3, this.game.world.height / 2 + 100, "Final Score: " + this.score, { font: "50px Arial", fill: FONT_COLOR });
 
     this.addButton(
-      this.game.world.centerX, this.game.world.height - 80,
-      "start", () => this.game.state.start("play"),
+      this.game.world.centerX, this.game.world.height - 100,
+      "restart", () => this.game.state.start("play"),
     );
 
   }
@@ -45,7 +45,7 @@ export default class GameOverState extends Phaser.State {
     );
 
     startButton.anchor.setTo(0.5, 0.5);
-    startButton.scale.setTo(0.25);
+    startButton.scale.setTo(1);
 
   }
 
