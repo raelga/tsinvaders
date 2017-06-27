@@ -198,6 +198,16 @@ export default class Play extends Phaser.State {
 
   private gameover(message: string): void {
 
+    this.enemies.boom();
+
+    if (!this.player.outOfLives) {
+      this.game.physics.arcade.moveToXY(
+        this.player.ship,
+        this.game.world.centerX, 0,
+        undefined, 5000,
+      );
+    }
+
     this.game.state.start("gameover", false, false, message, this.score);
 
   }
