@@ -43,7 +43,7 @@ export default class Weapon implements IWeapon {
 
     }
 
-    private setupBullets(group: Phaser.Group, image: string, speed: number, ammount: number = 30): void {
+    private setupBullets(group: Phaser.Group, image: string, speed: number, ammount: number = 30, scale: number = 0.25): void {
 
         // create the bullet group
         this.bullets = new Bullets(group, image, speed);
@@ -53,8 +53,8 @@ export default class Weapon implements IWeapon {
         // create the bullets
         this.bullets.createMultiple(ammount, this.bullets.image);
         [
-        { name: "width", value: 20 },
-        { name: "height", value: 40 },
+        { name: "scale.x", value: scale },
+        { name: "scale.y", value: scale },
         { name: "anchor.x", value: 0.5 },
         { name: "anchor.y", value: 1 },
         { name: "outOfBoundsKill", value: true },
