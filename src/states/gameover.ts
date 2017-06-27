@@ -16,13 +16,11 @@ export default class GameOverState extends Phaser.State {
 
     this.game.add.text(this.game.world.width / 3, this.game.world.height / 2, this.message, { font: "50px Arial", fill: FONT_COLOR });
     this.game.add.text(this.game.world.width / 3, this.game.world.height / 2 + 100, "Final Score: " + this.score, { font: "50px Arial", fill: FONT_COLOR });
-    this.game.add.text(this.game.world.width / 3, this.game.world.height - 80, "Press space to restart", { font: "50px Arial", fill: FONT_COLOR });
 
-    // look for spacebar press
-    let space: Phaser.Key = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-    // call play funcion when user press spacebar
-    space.onDown.addOnce(this.restart, this);
+    this.addButton(
+      this.game.world.centerX, this.game.world.height - 80,
+      "start", () => this.game.state.start("play"),
+    );
 
   }
 
@@ -38,6 +36,18 @@ export default class GameOverState extends Phaser.State {
 
   }
 
-  public restart = () => this.game.state.start("play");
+  private addButton(x: number, y: number, image: string, onClick: Function): void {
+
+    let startButton = this.game.add.button(
+      x, y,
+      image, onClick, this,
+      1, 0, 2,
+    );
+
+    startButton.anchor.setTo(0.5, 0.5);
+    startButton.scale.setTo(0.25);
+
+  }
+
 
 }
