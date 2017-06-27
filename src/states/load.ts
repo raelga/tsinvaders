@@ -31,6 +31,7 @@ export default class LoadState extends Phaser.State {
       { name: "enemyBullet", file: "enemyBullet.png" },
       { name: "player", file: "player.png" },
       { name: "background", file: "background.png" },
+      { name: "gameover", file: "gameover.png" },
     ].forEach((i: IImage) => this.game.load.image(i.name, path.join(imageAssetsPath, i.file)));
 
     [
