@@ -10,8 +10,8 @@ module.exports = {
         game: path.join(__dirname, 'src/game.ts'),
     },
     output: {
-        filename: 'game.bundle.js',
-        path: outputPath,
+        filename: 'cps.game.bundle.js',
+        path: path.join(outputPath, "dist"),
     },
     devtool: "source-map",
     resolve: {
@@ -70,7 +70,7 @@ module.exports = {
             title: 'TypeScript Space Invaders Clone - CPS'
         }),
         new CleanWebpackPlugin([
-            path.join(__dirname, 'dist')
+            path.join(outputPath, "dist"),
         ]),
         new webpack.DefinePlugin({
             'DEBUG': false,
