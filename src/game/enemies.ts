@@ -37,8 +37,8 @@ export default class Enemies {
     // create the bullets pool
     this.bullets.createMultiple(30, bulletImage);
     [
-      { name: "width", value: 20 },
-      { name: "height", value: 20 },
+      { name: "scale.x", value: 0.20 },
+      { name: "scale.y", value: 0.20 },
       { name: "anchor.x", value: 0.5 },
       { name: "anchor.y", value: 1 },
       { name: "outOfBoundsKill", value: true },
@@ -134,7 +134,7 @@ export default class Enemies {
       this.cooldown--;
     }
 
-    if ( Math.random() < (0.005 * this.level) ) {
+    if ( target.alive && Math.random() < (0.005 * this.level) ) {
       this.fire(target, game);
     }
 
@@ -205,6 +205,6 @@ export default class Enemies {
 
   public levelUp = () => this.level += 2;
 
-  public boom = () => this.ships.forEach((ship: Phaser.Sprite) => this.hit(ship), this);
+  public boom = () => this.ships.forEach((ship: Phaser.Sprite) => { if (ship.alive) this.hit(ship); }, this );
 
 }

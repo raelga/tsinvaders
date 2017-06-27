@@ -8,6 +8,7 @@ export default class Player {
   private explosions: Phaser.Group;
 
   public lives: number = 5;
+  public scale: number = 0.45;
 
   private PLAYER_SPEED: number = 500;
 
@@ -15,7 +16,7 @@ export default class Player {
 
     // attach the ship
     this.ship = ship;
-    this.ship.scale.set(0.35);
+    this.ship.scale.set(this.scale);
 
     // create the explosions pool
     this.explosions = explosions;

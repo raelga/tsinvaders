@@ -21,7 +21,7 @@ export default class Play extends Phaser.State {
 
   private scoreOSD: Phaser.Text;
   private timerOSD: Phaser.Text;
-  private livesOSD: Phaser.Group;
+  private spareShips: Phaser.Group;
 
   private cursors: Phaser.CursorKeys;
   private fireKey: Phaser.Key;
@@ -59,6 +59,17 @@ export default class Play extends Phaser.State {
 
     this.physics.enable(this.player.ship, Phaser.Physics.ARCADE);
 
+    this.spareShips = this.add.group();
+    this.spareShips.enableBody = true;
+    this.spareShips.physicsBodyType = Phaser.Physics.ARCADE;
+
+    for (let i = 0; i < this.player.lives; i++) {
+        let ship: Phaser.Sprite = this.spareShips.create(100, this.world.height - 50 * this.player.lives + (50 * i), "player");
+        ship.scale.setTo(0.20);
+        ship.angle = 90;
+        ship.alpha = 0.7;
+    }
+
   }
 
   private setupEnemies(shipImage: string = "enemy", bulletImage: string = "enemyBullet"): void  {
@@ -85,8 +96,8 @@ export default class Play extends Phaser.State {
     );
 
     // fire if up arrow or the fire key are pressed
-    if (this.cursors.up.isDown || this.fireKey.isDown) {
-      this.player.fire();
+    if (this.cursors.up.isDown || this.fireKey.isDown ) {
+      if (this.player.ship.alive) this.player.fire();
     }
 
     // check collisions
@@ -94,11 +105,6 @@ export default class Play extends Phaser.State {
 
     this.scoreOSD.setText(this.score.toString());
     this.timerOSD.setText(this.clock(this.timeUp));
-
-    // check lives
-    if (this.player.outOfLives) {
-      this.gameover("You run out of lives!");
-    }
 
   }
 
@@ -111,8 +117,7 @@ export default class Play extends Phaser.State {
       (ship: Phaser.Sprite, bullet: Phaser.Sprite) => {
         bullet.kill();
         this.player.hit(ship);
-        this.livesOSD.getFirstAlive().kill();
-        this.player.respawn(this.game.width / 2, this.game.height - 100);
+        this.playerRespawn();
       },
     );
 
@@ -161,16 +166,6 @@ export default class Play extends Phaser.State {
 
     this.scoreOSD = this.game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: FONT_COLOR });
 
-    this.livesOSD = this.add.group();
-
-    for (let i = 0; i < this.player.lives; i++) {
-        let ship: Phaser.Sprite = this.livesOSD.create(100, this.world.height - 50 * this.player.lives + (50 * i), "player");
-        ship.anchor.setTo(0.5, 0.5);
-        ship.scale.setTo(0.15);
-        ship.angle = 90;
-        ship.alpha = 0.7;
-    }
-
     // create a timer
     this.timer = this.game.time.create();
 
@@ -180,6 +175,36 @@ export default class Play extends Phaser.State {
 
     // Start the timer
     this.timer.start();
+
+  }
+
+  private playerRespawn(): void {
+
+    let spareShip: Phaser.Sprite = this.spareShips.getFirstAlive();
+
+    // check spare ships
+    if (!this.player.ship.alive && !spareShip) {
+
+      this.gameover("You run out of lives!");
+
+    } else {
+
+      // Scale from the spareShip size to the player size
+      this.game.add.tween(spareShip.scale).to(
+        { x: this.player.scale, y: this.player.scale }, 3000, Phaser.Easing.Quadratic.InOut, true,
+      );
+
+      // Move the spareShip to the starting position and respawn the player
+      this.game.add.tween(spareShip).to(
+        { x: this.game.world.centerX, y: this.game.height - 100, angle: 0, alpha: 1 },
+        3000, Phaser.Easing.Quadratic.InOut, true, 250, 0, false,
+        ).onComplete.addOnce(
+          () => {
+            spareShip.kill();
+            this.player.respawn(this.game.world.centerX, this.game.height - 100);
+            },
+        );
+    }
 
   }
 
@@ -199,17 +224,14 @@ export default class Play extends Phaser.State {
   private gameover(message: string): void {
 
     this.enemies.boom();
-
-    if (!this.player.outOfLives) {
-      this.game.physics.arcade.moveToXY(
-        this.player.ship,
-        this.game.world.centerX, 0,
-        undefined, 5000,
-      );
-    }
+    this.fly(this.player.ship, this.game.world.centerX, 0, 5000);
 
     this.game.state.start("gameover", false, false, message, this.score);
 
+  }
+
+  private fly(object: Phaser.Sprite, x: number, y: number, duration: number = 1000): void {
+    if (object.alive) this.game.physics.arcade.moveToXY(object, x, y, undefined, duration);
   }
 
 }
