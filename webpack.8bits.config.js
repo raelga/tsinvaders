@@ -10,8 +10,8 @@ module.exports = {
         game: path.join(__dirname, 'src/game.ts'),
     },
     output: {
-        filename: 'game.bundle.js',
-        path: outputPath,
+        filename: '8bits.game.bundle.js',
+        path: path.join(outputPath, "dist"),
     },
     devtool: "source-map",
     resolve: {
@@ -67,15 +67,15 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: path.resolve(outputPath, 'index.html'),
             template: './templates/index.ejs',
-            title: 'TypeScript Space Invaders Clone - CPS'
+            title: 'TypeScript Space Invaders Clone - 8bits'
         }),
         new CleanWebpackPlugin([
-            path.join(__dirname, 'dist')
+            path.join(outputPath, "dist"),
         ]),
         new webpack.DefinePlugin({
             'DEBUG': false,
             'ASSETS_PATH': JSON.stringify("assets"),
-            'FONT_COLOR': JSON.stringify("#fff"),
+            'FONT_COLOR': JSON.stringify("#698e00"),
         }),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
