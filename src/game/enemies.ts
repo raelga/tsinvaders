@@ -205,4 +205,6 @@ export default class Enemies {
 
   public levelUp = () => this.level += 2;
 
+  public boom = () => this.ships.forEach((ship: Phaser.Sprite) => this.hit(ship), this);
+
 }
