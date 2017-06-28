@@ -20,7 +20,7 @@
     "phaser-ce": "^2.7.0"
   },
   "devDependencies": {
-    "@types/node": "^8.0.1",
+    "@types/node": "8.0.2",
     "clean-webpack-plugin": "0.1.16",
     "commander": "2.9.0",
     "expose-loader": "^0.7.3",
@@ -30,7 +30,7 @@
     "ts-loader": "^2.1.0",
     "tslint": "^5.4.3",
     "tslint-loader": "^3.5.3",
-    "typescript": "^2.3.4",
+    "typescript": "2.3.4",
     "webfontloader": "^1.6.28",
     "webpack": "2.4.1",
     "webpack-dev-server": "^2.5.0",
