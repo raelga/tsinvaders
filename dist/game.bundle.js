@@ -367,13 +367,13 @@ var GameOverState = (function (_super) {
     };
     GameOverState.prototype.create = function () {
         var _this = this;
-        this.showGameOverBanner();
-        this.game.add.text(this.game.world.width / 3, this.game.world.height / 2, this.message, { font: "50px Arial", fill: "#fff" });
-        this.game.add.text(this.game.world.width / 3, this.game.world.height / 2 + 100, "Final Score: " + this.score, { font: "50px Arial", fill: "#fff" });
+        this.showGameOverBanner(this.game.world.centerX, this.game.world.centerY);
+        this.game.add.text(this.game.world.centerX, this.game.world.height / 3 * 2, this.message, { font: "50px Lucida Console", fill: "#fff" }).anchor.set(0.5, 0.5);
+        this.game.add.text(this.game.world.centerX, this.game.world.height / 3 * 2 + 100, "Final Score: " + this.score, { font: "50px Lucida Console", fill: "#fff" }).anchor.set(0.5, 0.5);
         this.addButton(this.game.world.centerX, this.game.world.height - 100, "restart", function () { return _this.game.state.start("play"); });
     };
-    GameOverState.prototype.showGameOverBanner = function () {
-        var gameover = this.game.add.sprite(this.game.world.width / 2, this.game.world.height / 2 - 100, "gameover");
+    GameOverState.prototype.showGameOverBanner = function (x, y) {
+        var gameover = this.game.add.sprite(x, y, "gameover");
         gameover.anchor.setTo(0.5, 0.5);
         gameover.alpha = 0;
         gameover.scale.setTo(0.25);
@@ -422,13 +422,14 @@ var LoadState = (function (_super) {
             { name: "player", file: "player.png" },
             { name: "background", file: "background.png" },
             { name: "gameover", file: "gameover.png" },
+            { name: "game", file: "game.png" },
         ].forEach(function (i) { return _this.game.load.image(i.name, path.join(imageAssetsPath, i.file)); });
         [
             { name: "enemy", file: "enemy.png", width: 200, height: 200, frames: 6 },
             { name: "explosion", file: "explosion.png", width: 200, height: 200, frames: 6 },
             { name: "playerExplosion", file: "playerExplosion.png", width: 96, height: 96, frames: 12 },
             { name: "start", file: "start.png", width: 1920, height: 400, frames: 3 },
-            { name: "restart", file: "restart.png", width: 304, height: 60, frames: 1 },
+            { name: "restart", file: "restart.png", width: 300, height: 80, frames: 3 },
         ].forEach(function (s) { return _this.game.load.spritesheet(s.name, path.join(imageAssetsPath, s.file), s.width, s.height, s.frames); });
     };
     LoadState.prototype.create = function () {
@@ -470,11 +471,10 @@ var MenuState = (function (_super) {
     MenuState.prototype.create = function () {
         var _this = this;
         this.setupBackground();
-        this.game.add.text(80, 80, "TS Invaders", { font: "50px Arial", fill: "#fff" });
-        this.game.add.text(80, this.game.world.height - 80, "Press space to start", { font: "50px Arial", fill: "#fff" });
-        var space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        space.onDown.addOnce(this.play, this);
-        this.addButton(this.game.world.centerX, this.game.world.height * 2 / 3, "start", function () { return _this.game.state.start("play"); }, 0.25);
+        this.game.add.sprite(this.game.world.centerX, this.game.world.centerY / 2, "game").anchor.setTo(0.5, 0.5);
+        this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.addOnce(this.play, this);
+        this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.addOnce(this.play, this);
+        this.addButton(this.game.world.centerX, this.game.world.height * 2 / 3, "start", function () { return _this.game.state.start("play"); }, 0.15);
     };
     MenuState.prototype.addButton = function (x, y, image, onClick, scale) {
         if (scale === void 0) { scale = 0.5; }
@@ -565,6 +565,7 @@ var Play = (function (_super) {
         }
         this.checkCollisions();
         this.scoreOSD.setText(this.score.toString());
+        this.levelOSD.setText("Level " + this.enemies.level.toString());
         this.timerOSD.setText(this.clock(this.timeUp));
     };
     Play.prototype.checkCollisions = function () {
@@ -582,6 +583,7 @@ var Play = (function (_super) {
         this.game.physics.arcade.overlap(this.player.ship, this.enemies.ships, function (player_ship, enemy_ship) {
             _this.enemies.hit(enemy_ship);
             _this.player.hit(player_ship);
+            _this.playerRespawn();
         });
     };
     Play.prototype.scrollBackground = function (x, y) {
@@ -596,17 +598,18 @@ var Play = (function (_super) {
     };
     Play.prototype.setupOSD = function () {
         var _this = this;
-        this.scoreOSD = this.game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: "#fff" });
+        this.levelOSD = this.game.add.text(100, 50, this.level.toString(), { font: "44px Lucida Console", fill: "#fff" });
+        this.scoreOSD = this.game.add.text(100, 100, this.score.toString(), { font: "44px Lucida Console", fill: "#fff" });
         this.timer = this.game.time.create();
         this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, function () { return _this.timesUp(); }, this);
-        this.timerOSD = this.game.add.text(this.game.width - 150, 100, this.clock(this.timeUp), { font: "34px Arial", fill: "#fff" });
+        this.timerOSD = this.game.add.text(this.game.width - 200, 100, this.clock(this.timeUp), { font: "44px Lucida Console", fill: "#fff" });
         this.timer.start();
     };
     Play.prototype.playerRespawn = function () {
         var _this = this;
         var spareShip = this.spareShips.getFirstAlive();
         if (!this.player.ship.alive && !spareShip) {
-            this.gameover("You run out of lives!");
+            this.gameover("You ran out of lives!");
         }
         else {
             this.game.add.tween(spareShip.scale).to({ x: this.player.scale, y: this.player.scale }, 3000, Phaser.Easing.Quadratic.InOut, true);
@@ -623,8 +626,8 @@ var Play = (function (_super) {
         return minutes.substr(-2) + ":" + seconds.substr(-2);
     };
     Play.prototype.timesUp = function () {
-        this.timerOSD.setText("Times up!");
-        this.gameover("You run out of time!");
+        this.timerOSD.setText("Time's up!");
+        this.gameover("You ran out of time!");
     };
     Play.prototype.gameover = function (message) {
         this.enemies.boom();
@@ -106575,7 +106578,7 @@ function startGame() {
         renderer: Phaser.AUTO,
         parent: "",
         transparent: false,
-        antialias: false,
+        antialias: true,
         state: this,
         physicsConfig: Phaser.Physics.ARCADE,
     };
@@ -106601,7 +106604,7 @@ var Enemies = (function () {
         this.BULLET_SPEED = 100;
         this.FIRE_COOLDOWN = 10;
         this.shipImage = "enemy";
-        this.levelUp = function () { return _this.level += 2; };
+        this.levelUp = function () { return _this.level++; };
         this.boom = function () { return _this.ships.forEach(function (ship) { if (ship.alive)
             _this.hit(ship); }, _this); };
         this.ships = game.add.group();
@@ -106666,7 +106669,7 @@ var Enemies = (function () {
         if (this.cooldown > 0) {
             this.cooldown--;
         }
-        if (target.alive && Math.random() < (0.005 * this.level)) {
+        if (target.alive && Math.random() < (0.01 * this.level)) {
             this.fire(target, game);
         }
         if (this.ships.countLiving() === 0) {
@@ -106683,7 +106686,7 @@ var Enemies = (function () {
                 var shooter = this.ships.getRandom();
                 if (shooter.alive) {
                     bullet.reset(shooter.body.x, shooter.body.y);
-                    game.physics.arcade.moveToObject(bullet, target, speed + 50 * this.level);
+                    game.physics.arcade.moveToObject(bullet, target, speed + 100 * this.level);
                     this.cooldown = this.FIRE_COOLDOWN;
                 }
             }
@@ -106718,7 +106721,7 @@ var Player = (function () {
         var _this = this;
         this.lives = 5;
         this.scale = 0.45;
-        this.PLAYER_SPEED = 500;
+        this.PLAYER_SPEED = 750;
         this.fire = function () { return _this.weapon.fire(_this.ship); };
         this.respawn = function (x, y) { _this.ship.revive(); _this.ship.position.setTo(x, y); };
         this.ship = ship;
