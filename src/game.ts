@@ -38,7 +38,7 @@ function startGame(): void {
         renderer:       Phaser.AUTO,
         parent:         "",
         transparent:    false,
-        antialias:      false,
+        antialias:      true,
         state:          this,
         physicsConfig:  Phaser.Physics.ARCADE,
     };
