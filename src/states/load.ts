@@ -39,7 +39,7 @@ export default class LoadState extends Phaser.State {
       { name: "explosion", file: "explosion.png", width: 200, height: 200, frames: 6 },
       { name: "playerExplosion", file: "playerExplosion.png", width: 96, height: 96, frames: 12 },
       { name: "start", file: "start.png", width: 1920, height: 400, frames: 3 },
-      { name: "restart", file: "restart.png", width: 304, height: 60, frames: 1 },
+      { name: "restart", file: "restart.png", width: 300, height: 80, frames: 3 },
     ].forEach((s: ISprite) => this.game.load.spritesheet(s.name, path.join(imageAssetsPath, s.file), s.width, s.height, s.frames));
 
   }
