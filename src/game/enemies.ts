@@ -10,7 +10,7 @@ export default class Enemies {
   private explosions: Phaser.Group;
   fleet:    Phaser.Tween;
 
-  private level: number = 1;
+  public level: number = 1;
   private cooldown: number = 0;
 
   private BULLET_SPEED: number = 100;
@@ -134,7 +134,7 @@ export default class Enemies {
       this.cooldown--;
     }
 
-    if ( target.alive && Math.random() < (0.005 * this.level) ) {
+    if ( target.alive && Math.random() < (0.01 * this.level) ) {
       this.fire(target, game);
     }
 
@@ -171,7 +171,7 @@ export default class Enemies {
           // fire the bullet from this enemy to the player
           game.physics.arcade.moveToObject(
             bullet, target,
-            speed + 50 * this.level,
+            speed + 100 * this.level,
           );
 
           // set up the cooldown
@@ -203,7 +203,7 @@ export default class Enemies {
 
   }
 
-  public levelUp = () => this.level += 2;
+  public levelUp = () => this.level++;
 
   public boom = () => this.ships.forEach((ship: Phaser.Sprite) => { if (ship.alive) this.hit(ship); }, this );
 
