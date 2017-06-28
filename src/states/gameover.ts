@@ -12,10 +12,17 @@ export default class GameOverState extends Phaser.State {
 
   public create(): void {
 
-    this.showGameOverBanner();
+    this.showGameOverBanner(this.game.world.centerX, this.game.world.centerY);
 
-    this.game.add.text(this.game.world.width / 3, this.game.world.height / 2, this.message, { font: "50px Arial", fill: FONT_COLOR });
-    this.game.add.text(this.game.world.width / 3, this.game.world.height / 2 + 100, "Final Score: " + this.score, { font: "50px Arial", fill: FONT_COLOR });
+    this.game.add.text(
+      this.game.world.centerX, this.game.world.height / 3 * 2,
+      this.message, { font: "50px Lucida Console", fill: FONT_COLOR },
+    ).anchor.set(0.5, 0.5);
+
+    this.game.add.text(
+      this.game.world.centerX, this.game.world.height / 3 * 2 + 100,
+      "Final Score: " + this.score, { font: "50px Lucida Console", fill: FONT_COLOR },
+    ).anchor.set(0.5, 0.5);
 
     this.addButton(
       this.game.world.centerX, this.game.world.height - 100,
@@ -24,9 +31,9 @@ export default class GameOverState extends Phaser.State {
 
   }
 
-  public showGameOverBanner() {
+  public showGameOverBanner(x: number, y: number) {
 
-    let gameover: Phaser.Sprite = this.game.add.sprite(this.game.world.width / 2, this.game.world.height / 2 - 100, "gameover");
+    let gameover: Phaser.Sprite = this.game.add.sprite(x, y, "gameover");
 
     gameover.anchor.setTo(0.5, 0.5);
     gameover.alpha = 0;
