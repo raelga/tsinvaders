@@ -15,7 +15,7 @@ export default class MenuState extends Phaser.State {
     this.addButton(
       this.game.world.centerX, this.game.world.height * 2 / 3,
       "start", () => this.game.state.start("play"),
-      0.25,
+      0.15,
     );
 
   }
