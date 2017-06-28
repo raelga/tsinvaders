@@ -7,14 +7,11 @@ export default class MenuState extends Phaser.State {
     // game logo
     this.game.add.sprite(this.game.world.centerX, this.game.world.centerY / 2, "game").anchor.setTo(0.5, 0.5);
 
-    this.game.add.text(80, this.game.world.height - 80, "Press space to start", { font: "50px Arial", fill: "#fff" });
+    // start when the user press enter or space
+    this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.addOnce(this.play, this);
+    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.addOnce(this.play, this);
 
-    // look for spacebar press
-    let space: Phaser.Key = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-    // call play funcion when user press spacebar
-    space.onDown.addOnce(this.play, this);
-
+    // start when user ckicks on the start button
     this.addButton(
       this.game.world.centerX, this.game.world.height * 2 / 3,
       "start", () => this.game.state.start("play"),
