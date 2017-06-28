@@ -142,6 +142,7 @@ export default class Play extends Phaser.State {
       (player_ship: Phaser.Sprite, enemy_ship: Phaser.Sprite) => {
         this.enemies.hit(enemy_ship);
         this.player.hit(player_ship);
+        this.playerRespawn();
       },
     );
 
