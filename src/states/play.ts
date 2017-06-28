@@ -18,8 +18,9 @@ export default class Play extends Phaser.State {
 
   private timer: Phaser.Timer;
   private timeUp: Phaser.TimerEvent;
-
+  
   private scoreOSD: Phaser.Text;
+  private levelOSD: Phaser.Text;
   private timerOSD: Phaser.Text;
   private spareShips: Phaser.Group;
 
@@ -103,7 +104,9 @@ export default class Play extends Phaser.State {
     // check collisions
     this.checkCollisions();
 
+    // update osd
     this.scoreOSD.setText(this.score.toString());
+    this.levelOSD.setText("Level " + this.enemies.level.toString());
     this.timerOSD.setText(this.clock(this.timeUp));
 
   }
@@ -164,14 +167,15 @@ export default class Play extends Phaser.State {
 
   private setupOSD(): void {
 
-    this.scoreOSD = this.game.add.text(100, 100, "Score: " + this.score, { font: "34px Arial", fill: FONT_COLOR });
+    this.levelOSD = this.game.add.text(100, 50, this.level.toString(), { font: "44px Lucida Console", fill: FONT_COLOR });
+    this.scoreOSD = this.game.add.text(100, 100, this.score.toString(), { font: "44px Lucida Console", fill: FONT_COLOR });
 
     // create a timer
     this.timer = this.game.time.create();
 
     // Create a delayed event 2m from now
     this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timesUp(), this);
-    this.timerOSD = this.game.add.text(this.game.width - 150, 100, this.clock(this.timeUp), { font: "34px Arial", fill: FONT_COLOR });
+    this.timerOSD = this.game.add.text(this.game.width - 200, 100, this.clock(this.timeUp), { font: "44px Lucida Console", fill: FONT_COLOR });
 
     // Start the timer
     this.timer.start();
