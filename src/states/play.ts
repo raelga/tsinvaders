@@ -185,7 +185,7 @@ export default class Play extends Phaser.State {
     // check spare ships
     if (!this.player.ship.alive && !spareShip) {
 
-      this.gameover("You run out of lives!");
+      this.gameover("You ran out of lives!");
 
     } else {
 
@@ -217,8 +217,8 @@ export default class Play extends Phaser.State {
     }
 
   private timesUp(): void {
-      this.timerOSD.setText("Times up!");
-      this.gameover("You run out of time!");
+      this.timerOSD.setText("Time's up!");
+      this.gameover("You ran out of time!");
   }
 
   private gameover(message: string): void {
