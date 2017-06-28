@@ -10,7 +10,7 @@ export default class Player {
   public lives: number = 5;
   public scale: number = 0.45;
 
-  private PLAYER_SPEED: number = 500;
+  private PLAYER_SPEED: number = 750;
 
   constructor(ship: Phaser.Sprite, explosions: Phaser.Group, weapon: Weapon) {
 
