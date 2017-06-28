@@ -18,7 +18,7 @@ export default class Play extends Phaser.State {
 
   private timer: Phaser.Timer;
   private timeUp: Phaser.TimerEvent;
-  
+
   private scoreOSD: Phaser.Text;
   private levelOSD: Phaser.Text;
   private timerOSD: Phaser.Text;
@@ -176,7 +176,7 @@ export default class Play extends Phaser.State {
 
     // Create a delayed event 2m from now
     this.timeUp = this.timer.add(Phaser.Timer.MINUTE * 2, () => this.timesUp(), this);
-    this.timerOSD = this.game.add.text(this.game.width - 200, 100, this.clock(this.timeUp), { font: "44px Lucida Console", fill: FONT_COLOR });
+    this.timerOSD = this.game.add.text(this.game.width - 300, 100, this.clock(this.timeUp), { font: "44px Lucida Console", fill: FONT_COLOR });
 
     // Start the timer
     this.timer.start();
