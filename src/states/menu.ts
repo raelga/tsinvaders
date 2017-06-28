@@ -4,7 +4,8 @@ export default class MenuState extends Phaser.State {
 
     this.setupBackground();
 
-    this.game.add.text(80, 80, "TS Invaders", { font: "50px Arial", fill: "#fff" });
+    // game logo
+    this.game.add.sprite(this.game.world.centerX, this.game.world.centerY / 2, "game").anchor.setTo(0.5, 0.5);
 
     this.game.add.text(80, this.game.world.height - 80, "Press space to start", { font: "50px Arial", fill: "#fff" });
 
