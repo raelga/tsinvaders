@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/raelga/tsinvaders.svg?branch=master)](https://travis-ci.org/raelga/tsinvaders)
+[![Go Report](https://goreportcard.com/badge/github.com/raelga/BanMeNotBot)](https://goreportcard.com/report/github.com/raelga/BanMeNotBot)
 
 # TS Invaders
 
