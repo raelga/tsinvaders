@@ -27,7 +27,7 @@
     "html-webpack-plugin": "^5.3.1",
     "kind-of": ">=6.0.3",
     "npm-check": "^5.9.2",
-    "minimist": ">=1.2.5",
+    "minimist": ">=1.2.6",
     "phaser-ce": "2.13.3",
     "serialize-javascript": ">=5.0.1",
     "ts-loader": "^9.2.3",
