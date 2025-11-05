@@ -26,7 +26,6 @@
     "expose-loader": "^3.0.0",
     "html-webpack-plugin": "^5.3.1",
     "kind-of": ">=6.0.3",
-    "npm-check": "^6.0.1",
     "minimist": ">=1.2.6",
     "phaser-ce": "2.13.3",
     "serialize-javascript": ">=5.0.1",
@@ -45,7 +44,6 @@
     "server": "webpack-dev-server --config webpack.dev.config.js --open --hot --inline --colors",
     "dist": "webpack --config webpack.dist.config.js --progress --colors",
     "public:cps": "webpack --config webpack.cps.config.js --progress --colors",
-    "public:8bits": "webpack --config webpack.8bits.config.js --progress --colors",
-    "npm-check": "npm-check --skip-unused -u"
+    "public:8bits": "webpack --config webpack.8bits.config.js --progress --colors"
   }
 }
