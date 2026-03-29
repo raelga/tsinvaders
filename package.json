@@ -28,7 +28,7 @@
     "kind-of": ">=6.0.3",
     "minimist": ">=1.2.6",
     "phaser-ce": "2.13.3",
-    "serialize-javascript": ">=5.0.1",
+    "serialize-javascript": ">=7.0.5",
     "ts-loader": "^9.2.3",
     "tslint": "^5.20.1",
     "tslint-loader": "^3.5.4",
