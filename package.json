@@ -39,6 +39,10 @@
     "webpack-dev-server": "^5.2.1",
     "webpack-shell-plugin": "0.5.0"
   },
+  "overrides": {
+    "uuid": "14.0.0",
+    "serialize-javascript": "$serialize-javascript"
+  },
   "scripts": {
     "build": "webpack --config webpack.dev.config.js --progress --colors",
     "server": "webpack-dev-server --config webpack.dev.config.js --open --hot --inline --colors",
